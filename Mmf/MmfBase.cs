@@ -11,7 +11,7 @@ namespace InfoReader.Mmf
 {
     public abstract class MmfBase: EqualityComparer<MmfBase>
     {
-        System.Timers.Timer _fileReadTimer = new System.Timers.Timer();
+        readonly System.Timers.Timer _fileReadTimer = new System.Timers.Timer();
         public string Name { get; set; }
         [TomlIgnore]
         public System.IO.MemoryMappedFiles.MemoryMappedFile MappedFile { get; set; }
