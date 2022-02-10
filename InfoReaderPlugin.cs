@@ -27,7 +27,7 @@ namespace InfoReader
     [SyncSoftRequirePlugin("RealTimePPDisplayerPlugin", "OsuRTDataProviderPlugin")]
     public class InfoReaderPlugin: Plugin
     {
-        static readonly Dictionary<Type, IConfigConverter> _converters = new();
+        private static readonly Dictionary<Type, IConfigConverter> Converters = new();
         private readonly Dictionary<string, ICommandProcessor> _commandProcessors = new();
         public static void InitConfig(IConfigurable configurable, IConfigElement element, Dictionary<Type,object[]>? converterTypeArgs = null)
         {
@@ -61,7 +61,7 @@ namespace InfoReader
                 }
                 else
                 {
-                    if (!_converters.ContainsKey(converter))
+                    if (!Converters.ContainsKey(converter))
                     {
                         var args = Array.Empty<object>();
                         if (converterTypeArgs != null && converterTypeArgs.ContainsKey(converter))
@@ -70,10 +70,10 @@ namespace InfoReader
                         }
                         var converterIns =
                             (IConfigConverter?)ReflectionTools.CreateInstance(converter, args);
-                        _converters.Add(converter, converterIns ?? throw new InvalidOperationException());
+                        Converters.Add(converter, converterIns ?? throw new InvalidOperationException());
                     }
 
-                    cfgVal = lastElement.GetValue(_converters[converter]);
+                    cfgVal = lastElement.GetValue(Converters[converter]);
                 }
 
                 property.Item1.SetValue(configurable, cfgVal);
@@ -102,6 +102,7 @@ namespace InfoReader
         public InfoReaderConfiguration Configuration { get; } = new();
         public MmfConfiguration MmfConfiguration { get; } = new();
         public IMemoryDataSource? MemoryDataSource { get; private set; }
+        public IConfigElement ConfigElement { get; internal set; }
 
         public Dictionary<string, PropertyInfo> Variables { get; private set; } = new();
         public InfoReaderPlugin() : base("InfoReader", "Someone999")
@@ -110,6 +111,7 @@ namespace InfoReader
             string currentDir = ".\\InfoReader\\";
             Environment.CurrentDirectory = currentDir;
             var configElement = new TomlConfigElement("InfoReaderConfig.toml");
+            ConfigElement = configElement;
             Dictionary<Type, object[]> converterTypesArgs = new Dictionary<Type, object[]>
             {
                 {typeof(MmfsConverter), new object[] {this}},

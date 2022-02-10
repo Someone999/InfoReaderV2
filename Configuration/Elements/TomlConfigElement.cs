@@ -47,7 +47,7 @@ namespace InfoReader.Configuration.Elements
 
         public void SetValue(string key, object? val)
         {
-            if (_innerVal is Dictionary<string,object> dict)
+            if (_innerVal is Dictionary<string,object?> dict)
             {
                 dict[key] = val;
             }

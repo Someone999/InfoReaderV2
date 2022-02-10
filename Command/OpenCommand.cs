@@ -19,7 +19,7 @@ namespace InfoReader.Command
             throw new NotImplementedException();
         }
 
-        static void Open(string? target)
+        public static void Open(string? target)
         {
             if (string.IsNullOrEmpty(target))
                 return;

@@ -33,6 +33,10 @@ public class StatusMmfFilter: IMmfFilter
             FormatFile = config["FormatFile"].ToString(),
             Enabled = bool.Parse(config["Enabled"].ToString())
         };
+        if (config.ContainsKey("UpdateInterval"))
+        {
+            mmf.UpdateInterval = int.Parse(config["UpdateInterval"].ToString());
+        }
         return mmf;
     }
 }

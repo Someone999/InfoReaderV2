@@ -9,8 +9,13 @@ using osuTools.Beatmaps;
 
 namespace InfoReader.Tools
 {
+    public static class DefaultFilePath
+    {
+        public static string TomlConfigFile => "InfoReaderConfig.toml";
+    }
     public static class PathTools
     {
+        
         static List<char> _invalidFileNameCharacters = new List<char>();
         static List<char> _invalidPathCharacters = new List<char>();
         static PathTools()

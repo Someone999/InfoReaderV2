@@ -15,7 +15,9 @@ namespace InfoReader
         {
             try
             {
-                var vs = VariableTools.GetAvailableVariables(typeof(osuTools.OrtdpWrapper.OrtdpWrapper));
+                InfoReaderPlugin p = new();
+                MmfManager.GetInstance(p).Mmfs[0].Enabled = false;
+                while(true){}
             }
             catch (ArgumentException e)
             {

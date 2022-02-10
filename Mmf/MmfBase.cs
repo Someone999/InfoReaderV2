@@ -17,7 +17,18 @@ namespace InfoReader.Mmf
         public System.IO.MemoryMappedFiles.MemoryMappedFile MappedFile { get; set; }
         [TomlIgnore]
         public Stream MappedFileStream => MappedFile.CreateViewStream();
-        public bool Enabled { get; set; }
+        public event EnabledStateChangedEventHandler? OnEnabledStateChanged;
+        public int UpdateInterval { get; set; } = 100;
+        protected bool InternalEnabled;
+        public bool Enabled
+        {
+            get => InternalEnabled;
+            set
+            {
+                InternalEnabled = value;
+                OnEnabledStateChanged?.Invoke(this, value);
+            }
+        }
         public string FormatFile { get; set; } = "";
         public string Format { get; private set; } = "";
         protected MmfBase(string name)
@@ -93,10 +104,7 @@ namespace InfoReader.Mmf
 
         private void _fileReadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (Enabled)
-            {
-                Format = File.ReadAllText(FormatFile);
-            }
+            Format = Enabled ? File.ReadAllText(FormatFile) : string.Empty;
         }
 
         public virtual void Update(InfoReaderPlugin instance)
