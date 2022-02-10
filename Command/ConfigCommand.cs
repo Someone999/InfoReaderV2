@@ -7,6 +7,7 @@ using InfoReader.Configuration.Converter;
 using InfoReader.Configuration.Elements;
 using InfoReader.Configuration.Serializer;
 using InfoReader.Mmf;
+using InfoReader.Tools;
 
 namespace InfoReader.Command
 {
@@ -65,24 +66,49 @@ namespace InfoReader.Command
                     case "restore":
                         if (instance.ConfigElement is IConfigSerializer and IConfigWriter writer)
                         {
-                            writer.WriteToFile("InfoReaderConfig.toml");
+                            writer.WriteToFile(DefaultFilePath.CurrentConfigFile);
                         }
                         RefreshConfig(instance);
                         break;
                     case "open":
-                        OpenCommand.Open("InfoReaderConfig.toml");
+                        OpenCommand.Open(DefaultFilePath.CurrentConfigFile);
                         break;
+                }
+            }
+            else if (args.Length > 1)
+            {
+                switch (args[0])
+                {
+                    case "mmf":
+                        var mmfName = args[1];
+                        MmfBase? mmf = MmfManager.GetInstance(instance).FindMmf(mmfName);
+                        if (mmf == null)
+                            return true;
+                        OpenCommand.Open(mmf.FormatFile);
+                        break;
+
                 }
             }
             else if (args.Length > 2)
             {
-                if (args[0] == "mmf")
+                switch (args[0])
                 {
-                    var mmfName = args[1];
-                    MmfBase? b = MmfManager.GetInstance(instance).FindMmf(mmfName);
-                    if (b == null)
-                        return true;
-                    b.Enabled = bool.Parse(args[2]);
+                    case "mmf":
+                        var mmfName = args[1];
+                        MmfBase? mmf = MmfManager.GetInstance(instance).FindMmf(mmfName);
+                        if (mmf == null)
+                            return true;
+
+                        mmf.Enabled = args[2] switch
+                        {
+                            "disable" => false,
+                            "false" => false,
+                            "enable" => true,
+                            "true" => true,
+                            _ => false
+                        };
+                        break;
+
                 }
             }
             return true;

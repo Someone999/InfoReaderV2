@@ -66,9 +66,9 @@ namespace InfoReader.Configuration.Elements
             
         }
 
-        public Dictionary<string, object> ToDictionary()
+        public Dictionary<string, object?> ToDictionary()
         {
-            return _innerVal as Dictionary<string, object> ??
+            return _innerVal as Dictionary<string, object?> ??
                    throw new InvalidOperationException("Type of value is not a dictionary.");
         }
 

@@ -9,13 +9,12 @@ namespace InfoReader.Configuration.Elements
 {
     public class IniConfigElement : IConfigElement, IConfigWriter, IConfigSerializer
     {
-        Dictionary<string, object>? _config = new();
+        Dictionary<string, object?> _config = new();
         private object? _innerVal;
 
         public IniConfigElement(object? innerVal)
         {
             _innerVal = innerVal;
-            _config = null;
         }
         public IniConfigElement(string path)
         {
@@ -26,6 +25,10 @@ namespace InfoReader.Configuration.Elements
 
         void Parse(string[] lines)
         {
+            if (_innerVal != null)
+            {
+                return;
+            }
             string appKey = string.Empty;
             foreach (string line in lines)
             {
@@ -43,7 +46,10 @@ namespace InfoReader.Configuration.Elements
                     {
                         _config.Add(appKey, new Dictionary<string, object>());
                     }
-                    ((Dictionary<string,object>)_config[appKey]).Add(property, value);
+
+                    var subDict = _config[appKey];
+                    if(subDict != null)
+                       ((Dictionary<string,object>)subDict).Add(property, value);
                 }
                 else if (nLine.StartsWith("#"))
                 {
@@ -74,7 +80,7 @@ namespace InfoReader.Configuration.Elements
 
         public void SetValue(string key, object? val)
         {
-            if (_innerVal is Dictionary<string, object> d1)
+            if (_innerVal is Dictionary<string, object?> d1)
             {
                 d1[key] = val;
             }
@@ -88,9 +94,9 @@ namespace InfoReader.Configuration.Elements
             }
         }
 
-        public Dictionary<string, object> ToDictionary()
+        public Dictionary<string, object?> ToDictionary()
         {
-            return _innerVal as Dictionary<string, object> ??
+            return _innerVal as Dictionary<string, object?> ??
                    throw new InvalidOperationException("Type of value is not a dictionary.");
         }
 
@@ -113,7 +119,7 @@ namespace InfoReader.Configuration.Elements
         public string Serialize()
         {
             StringBuilder cfgStr = new StringBuilder();
-            foreach (var cfg in _config ?? new Dictionary<string, object>())
+            foreach (var cfg in _config)
             {
                 cfgStr.AppendLine($"[{cfg.Key}]");
                 cfgStr.AppendLine(Extend(cfg.Value as Dictionary<string, object>));

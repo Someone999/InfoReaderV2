@@ -12,7 +12,7 @@ namespace InfoReader.Configuration.Elements
         object? GetValue(Type targetType);
         void SetValue(string key, object? val);
         IConfigElement this[string key] { get; }
-        Dictionary<string, object> ToDictionary();
+        Dictionary<string, object?> ToDictionary();
 
     }
 }

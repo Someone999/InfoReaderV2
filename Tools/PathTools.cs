@@ -1,27 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Policy;
 using System.Text;
-using System.Threading.Tasks;
 using osuTools.Beatmaps;
 
 namespace InfoReader.Tools
 {
-    public static class DefaultFilePath
-    {
-        public static string TomlConfigFile => "InfoReaderConfig.toml";
-    }
     public static class PathTools
     {
         
-        static List<char> _invalidFileNameCharacters = new List<char>();
-        static List<char> _invalidPathCharacters = new List<char>();
+        static readonly List<char> InvalidFileNameCharacters = new List<char>();
+        static readonly List<char> InvalidPathCharacters = new List<char>();
         static PathTools()
         {
-            _invalidFileNameCharacters.AddRange(Path.GetInvalidFileNameChars());
-            _invalidPathCharacters.AddRange(Path.GetInvalidPathChars());
+            InvalidFileNameCharacters.AddRange(Path.GetInvalidFileNameChars());
+            InvalidPathCharacters.AddRange(Path.GetInvalidPathChars());
         }
 
         public static string GetBeatmapFileName(string path, Beatmap beatmap, string extend)
@@ -61,7 +54,7 @@ namespace InfoReader.Tools
             List<int> indexes = new List<int>();
             for (int i = 0; i < path.Length; i++)
             {
-                if (_invalidPathCharacters.Contains(path[i]))
+                if (InvalidPathCharacters.Contains(path[i]))
                 {
                     indexes.Add(i);
                 }
@@ -74,7 +67,7 @@ namespace InfoReader.Tools
             List<int> indexes = new List<int>();
             for (int i = 0; i < fileName.Length; i++)
             {
-                if (_invalidFileNameCharacters.Contains(fileName[i]))
+                if (InvalidFileNameCharacters.Contains(fileName[i]))
                 {
                     indexes.Add(i);
                 }

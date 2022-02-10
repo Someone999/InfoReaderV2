@@ -4,19 +4,19 @@ using System.Linq;
 
 namespace InfoReader.Configuration.Converter;
 
-public class YamlDictionaryConverter : IDictionaryConverter<Dictionary<object, object>>
+public class YamlDictionaryConverter : IDictionaryConverter<Dictionary<object, object?>>
 {
     public string ConfigType => "Yaml";
-    Dictionary<string, object>[]? ListExtender(List<object> lst)
+    Dictionary<string, object?>[]? ListExtender(List<object> lst)
     {
-        if (lst.FirstOrDefault() is Dictionary<object, object>)
+        if (lst.FirstOrDefault() is Dictionary<object, object?>)
         {
-            List<Dictionary<string, object>> l = new List<Dictionary<string, object>>();
+            List<Dictionary<string, object?>> l = new List<Dictionary<string, object?>>();
             foreach (var obj in lst)
             {
-                if (obj is not Dictionary<object, object> dictionary)
+                if (obj is not Dictionary<object, object?> dictionary)
                     continue;
-                Dictionary<string, object> convertedDictionary = Convert(dictionary);
+                Dictionary<string, object?> convertedDictionary = Convert(dictionary);
                 l.Add(convertedDictionary);
             }
             return l.ToArray();
@@ -24,16 +24,16 @@ public class YamlDictionaryConverter : IDictionaryConverter<Dictionary<object, o
 
         return null;
     }
-    public Dictionary<string, object> Convert(Dictionary<object, object> originalDictionary)
+    public Dictionary<string, object?> Convert(Dictionary<object, object?> originalDictionary)
     {
-        Dictionary<string, object> dict = new Dictionary<string, object>();
+        Dictionary<string, object?> dict = new Dictionary<string, object?>();
 
         
         foreach (var pair in originalDictionary)
         {
             var val = pair.Value;
 
-            if (val is Dictionary<object, object> d)
+            if (val is Dictionary<object, object?> d)
             {
                 val = Convert(d);
             }

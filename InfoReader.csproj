@@ -25,7 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>10</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <NoWarn>8632</NoWarn>
   </PropertyGroup>
@@ -144,6 +144,7 @@
     <Compile Include="Configuration\Converter\IConfigConverter.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\Elements\YamlConfigElement.cs" />
+    <Compile Include="Tools\DefaultFilePath.cs" />
     <Compile Include="Tools\PathTools.cs" />
     <Compile Include="Tools\I8n\ILanguageFileOperator.cs" />
     <Compile Include="Tools\I8n\ILocalizationInfo.cs" />

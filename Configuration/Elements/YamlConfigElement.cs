@@ -27,7 +27,7 @@ namespace InfoReader.Configuration.Elements
 
         public void SetValue(string key, object? val)
         {
-            if (_innerVal is Dictionary<object, object> dict)
+            if (_innerVal is Dictionary<object, object?> dict)
             {
                 dict[key] = val;
             }
@@ -43,9 +43,9 @@ namespace InfoReader.Configuration.Elements
             }
         }
 
-        public Dictionary<string, object> ToDictionary()
+        public Dictionary<string, object?> ToDictionary()
         {
-            return new YamlDictionaryConverter().Convert(_innerVal as Dictionary<object, object> ??
+            return new YamlDictionaryConverter().Convert(_innerVal as Dictionary<object, object?> ??
                                                          throw new InvalidOperationException(
                                                              "Type of value is not a dictionary."));
         }

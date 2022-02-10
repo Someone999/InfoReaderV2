@@ -253,16 +253,22 @@ namespace InfoReader.ExpressionParser.Tools
                     }
                     case OperatorExpressionNode op:
                     {
-                        if (op.Value.Equals("!"))
+                        switch (op.Value)
                         {
-                            vals.Push(op.Calculate(null, vals.Pop()));
+                            case null:
+                                throw new ArgumentNullException();
+                            case "!":
+                                vals.Push(op.Calculate(null, vals.Pop()));
+                                break;
+                            default:
+                            {
+                                var val2 = vals.Pop();
+                                var val1 = vals.Pop();
+                                vals.Push(op.Calculate(val1, val2));
+                                break;
+                            }
                         }
-                        else
-                        {
-                            var val2 = vals.Pop();
-                            var val1 = vals.Pop();
-                            vals.Push(op.Calculate(val1, val2));
-                        }
+
                         nodes.Pop();
                         continue;
                     }
