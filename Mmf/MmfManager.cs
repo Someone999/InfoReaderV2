@@ -78,9 +78,10 @@ namespace InfoReader.Mmf
             {
                 Thread.Sleep(mmf.UpdateInterval);
                 mmf.Update(_plugin);
-                if (!cancellationToken.IsCancellationRequested) 
-                    continue;
-                break;
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
             }
         }
         public void StartUpdate(int interval)
