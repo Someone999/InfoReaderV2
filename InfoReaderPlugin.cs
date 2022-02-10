@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using InfoReader.Command;
 using InfoReader.Command.Parser;
 using InfoReader.Configuration;
@@ -90,7 +91,7 @@ namespace InfoReader
                 {
                     args = commandTypeArgs[commandType];
                 }
-                ICommandProcessor? commandProcessor = (ICommandProcessor?) ReflectionTools.CreateInstance(commandType, Array.Empty<object>());
+                ICommandProcessor? commandProcessor = (ICommandProcessor?) ReflectionTools.CreateInstance(commandType, args);
                 if (commandProcessor == null)
                     continue;
                 _commandProcessors.Add(commandProcessor.MainCommand, commandProcessor);
@@ -101,6 +102,8 @@ namespace InfoReader
         public InfoReaderConfiguration Configuration { get; } = new();
         public MmfConfiguration MmfConfiguration { get; } = new();
         public IMemoryDataSource? MemoryDataSource { get; private set; }
+
+        public Dictionary<string, PropertyInfo> Variables { get; private set; } = new();
         public InfoReaderPlugin() : base("InfoReader", "Someone999")
         {
             string syncPath = Process.GetCurrentProcess().MainModule.FileName;
@@ -118,7 +121,8 @@ namespace InfoReader
             LocalizationInfo.Current = LocalizationInfo.GetLocalizationInfo(Configuration.LanguageId);
             EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(Loaded);
             EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitSyncCommand);
-            
+            ThreadPool.QueueUserWorkItem(state =>
+                Variables = VariableTools.GetAvailableVariables(typeof(OrtdpWrapper)));
         }
 
         bool CommandProcessor(Arguments args)
@@ -170,7 +174,6 @@ namespace InfoReader
             e.Commands.Dispatch.bind("getinfo", CommandProcessor, "None");
         }
 
-
         void Loaded(PluginEvents.LoadCompleteEvent e)
         {
             var ortdpPlugin = getHoster().EnumPluings().First(p => p.Name == "OsuRTDataProvider") as OsuRTDataProviderPlugin;
@@ -179,5 +182,7 @@ namespace InfoReader
             MemoryDataSource = new OrtdpWrapper(ortdpPlugin, rtppdPlugin, rtppd);
             MmfManager.GetInstance(this).StartUpdate(100);
         }
+
+
     }
 }

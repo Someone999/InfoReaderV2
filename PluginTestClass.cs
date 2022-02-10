@@ -15,9 +15,7 @@ namespace InfoReader
         {
             try
             {
-                var x = PathTools.GetInvalidFileNameCharsIndexes("1<2>3.<>4");
-                var c = PathTools.ClearInvalidCharacters("1<2>3.<>4", x);
-
+                var vs = VariableTools.GetAvailableVariables(typeof(osuTools.OrtdpWrapper.OrtdpWrapper));
             }
             catch (ArgumentException e)
             {

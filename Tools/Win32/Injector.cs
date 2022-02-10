@@ -49,17 +49,16 @@ public class Injector:IInjector
             return false;
         }
 
-        IntPtr hTread = NativeApi.CreateRemoteThread(process, IntPtr.Zero, 0, GetLoadLibrary(), remoteBuffer.Item1,
+        IntPtr hThread = NativeApi.CreateRemoteThread(process, IntPtr.Zero, 0, GetLoadLibrary(), remoteBuffer.Item1,
             0,
             IntPtr.Zero);
-        if (hTread != IntPtr.Zero)
-        {
-            NativeApi.WaitForSingleObject(hTread, 0xFFFFFFFF);
-            NativeApi.VirtualFreeEx(process, remoteBuffer.Item1, remoteBuffer.Item2,
-                NativeApi.AllocationType.Decommit);
-            return true;
-        }
+        if (hThread == IntPtr.Zero) 
+            return false;
+        NativeApi.WaitForSingleObject(hThread, 0xFFFFFFFF);
+        NativeApi.VirtualFreeEx(process, remoteBuffer.Item1, remoteBuffer.Item2,
+            NativeApi.AllocationType.Decommit);
+        NativeApi.CloseHandle(hThread);
+        return true;
 
-        return false;
     }
 }
