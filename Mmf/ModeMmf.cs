@@ -1,11 +1,12 @@
-﻿using osuTools.Game.Modes;
+﻿using InfoReader.Tools;
+using osuTools.Game.Modes;
 
 namespace InfoReader.Mmf
 {
-    public class ModeMmf: MmfBase
+    public class ModeMmf: MmfBase, IModeMmf
     {
-        public OsuGameMode EnabledMode { get; set; }
-        public ModeMmf(string name,OsuGameMode mode) : base(name)
+        public MmfGameMode EnabledMode { get; set; }
+        public ModeMmf(string name, MmfGameMode mode) : base(name)
         {
             EnabledMode = mode;
         }
@@ -14,7 +15,8 @@ namespace InfoReader.Mmf
         {
             if (instance.MemoryDataSource?.CurrentMode is not ILegacyMode legacyMode) 
                 return;
-            if (legacyMode.LegacyMode == EnabledMode)
+            bool containsMode = legacyMode.LegacyMode.ContainsMode(EnabledMode);
+            if (containsMode)
             {
                 base.Update(instance);
             }

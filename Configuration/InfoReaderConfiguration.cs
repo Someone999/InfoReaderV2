@@ -2,19 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using InfoReader.Configuration.Attribute;
+using System.Windows.Forms;
+using InfoReader.Configuration.Attributes;
 using InfoReader.Configuration.Converter;
 using InfoReader.Configuration.Elements;
+using InfoReader.Configuration.Gui;
 using InfoReader.Tools;
 using osuTools.OrtdpWrapper;
 
 namespace InfoReader.Configuration
 {
-    public class InfoReaderConfiguration : IConfigurable
+    public class InfoReaderConfiguration : IGuiConfigurable
     {
+        public string ConfigFilePath => DefaultFilePath.CurrentConfigFile;
+        public Type ConfigElementType => typeof(TomlConfigElement);
+        public string ConfigArgName => "program";
         [ConfigItem("Program.LanguageId")] 
         public string LanguageId { get; set; } = "en-us";
 
+        [Bool]
         [ConfigItem("Program.DebugMode")]
         public bool DebugMode { get; set; }
 
@@ -32,10 +38,12 @@ namespace InfoReader.Configuration
 
         [ConfigItem("Program.VideoCopyDirectory")]
         public string VideoCopyDirectory { get; set; } = ".\\Beatmap\\Video";
-
+        [List("OsuDb","OsuDb", "Ortdp")]
         [ConfigItem("Program.BeatmapReadMethod", converterType: typeof(BeatmapReadMethodsConverter))]
         public OrtdpWrapper.BeatmapReadMethods ReadMethod { get; set; }
+
         
+
         public void Save(IConfigElement element, Dictionary<Type,object?[]>? typeConverterArgs = null)
         {
             Type cfgType = typeof(MmfConfiguration);
@@ -63,6 +71,17 @@ namespace InfoReader.Configuration
 
                 tmp.SetValue(parts.Last(), currentValue);
             }
+        }
+
+        public Form CreateConfigWindow()
+        {
+            Form f = new Form();
+            return f;
+        }
+
+        void AddControls(Form form)
+        {
+
         }
     }
 }

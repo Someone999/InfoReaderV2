@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using InfoReader.Command.Parser;
+using InfoReader.Tools;
 
 namespace InfoReader.Command
 {
@@ -19,13 +20,8 @@ namespace InfoReader.Command
             throw new NotImplementedException();
         }
 
-        public static void Open(string? target)
-        {
-            if (string.IsNullOrEmpty(target))
-                return;
-            ProcessStartInfo startInfo = new ProcessStartInfo(target);
-            Process.Start(startInfo);
-        }
+        public static void Open(string target) => ProcessTools.StartProcess(target);
+       
 
         public bool Execute(InfoReaderPlugin instance, CommandParser parser)
         {
@@ -47,7 +43,13 @@ namespace InfoReader.Command
                     Open(instance.Configuration.BackgroundCopyDirectory);
                     break;
                 case "beatmappage":
-                    Open(instance.MemoryDataSource?.DownloadLink);
+                    var link = instance.MemoryDataSource?.DownloadLink;
+#pragma warning disable
+                    if (!string.IsNullOrEmpty(link))
+                    {
+                        Open(link);
+                    }
+#pragma warning restore
                     break;
             }
 

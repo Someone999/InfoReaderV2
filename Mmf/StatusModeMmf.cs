@@ -5,11 +5,11 @@ using osuTools.OrtdpWrapper;
 
 namespace InfoReader.Mmf;
 
-public class StatusModeMmf : MmfBase
+public class StatusModeMmf : MmfBase, IStatusMmf, IModeMmf
 {
-    public OsuGameMode EnabledMode { get; set; }
+    public MmfGameMode EnabledMode { get; set; }
     public OsuGameStatus EnabledStatus { get; set; }
-    public StatusModeMmf(string name, OsuGameMode mode, OsuGameStatus status) : base(name)
+    public StatusModeMmf(string name, MmfGameMode mode, OsuGameStatus status) : base(name)
     {
         EnabledStatus = status;
         EnabledMode = mode;
@@ -20,7 +20,8 @@ public class StatusModeMmf : MmfBase
         OrtdpWrapper ortdp = instance.MemoryDataSource as OrtdpWrapper ?? throw new ArgumentException();
         if (ortdp.CurrentMode is not ILegacyMode legacyMode)
             return;
-        if (legacyMode.LegacyMode == EnabledMode && (ortdp.CurrentStatus & EnabledStatus) != 0)
+        int legacy = (int)legacyMode.LegacyMode;
+        if (((1 << legacy) & (int)EnabledMode) != 0 && (ortdp.CurrentStatus & EnabledStatus) != 0)
         {
             base.Update(instance);
         }

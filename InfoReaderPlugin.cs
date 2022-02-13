@@ -8,7 +8,7 @@ using System.Threading;
 using InfoReader.Command;
 using InfoReader.Command.Parser;
 using InfoReader.Configuration;
-using InfoReader.Configuration.Attribute;
+using InfoReader.Configuration.Attributes;
 using InfoReader.Configuration.Converter;
 using InfoReader.Configuration.Elements;
 using InfoReader.Mmf;
@@ -28,62 +28,17 @@ namespace InfoReader
     public class InfoReaderPlugin: Plugin
     {
         private static readonly Dictionary<Type, IConfigConverter> Converters = new();
+
+        internal readonly Dictionary<string, IConfigurable> Configurables = new();
+        internal readonly Dictionary<int, IConfigElement> ConfigElements = new();
         private readonly Dictionary<string, ICommandProcessor> _commandProcessors = new();
-        public static void InitConfig(IConfigurable configurable, IConfigElement element, Dictionary<Type,object[]>? converterTypeArgs = null)
-        {
-            if (configurable == null)
-            {
-                throw new ArgumentNullException(nameof(configurable));
-            }
 
-            if (element == null)
-            {
-                throw new ArgumentNullException(nameof(element));
-            }
-
-
-            var props = ReflectionTools.GetPropertiesWithAttribute<ConfigItemAttribute>
-                (configurable.GetType(), BindingFlags.Public | BindingFlags.Instance);
-            foreach (var property in props)
-            {
-                IConfigElement lastElement = element;
-                var cfgInfo = property.Item2[0];
-                string[] paths = string.IsNullOrEmpty(cfgInfo.ConfigPath)
-                    ? new[] { property.Item1.Name }
-                    : cfgInfo.ConfigPath.Split('.');
-                lastElement = paths.Aggregate(lastElement, (current, path) => current[path]);
-
-                Type? converter = cfgInfo.ConverterType;
-                object? cfgVal;
-                if (converter == null)
-                {
-                    cfgVal = lastElement.GetValue(property.Item1.PropertyType);
-                }
-                else
-                {
-                    if (!Converters.ContainsKey(converter))
-                    {
-                        var args = Array.Empty<object>();
-                        if (converterTypeArgs != null && converterTypeArgs.ContainsKey(converter))
-                        {
-                            args = converterTypeArgs[converter];
-                        }
-                        var converterIns =
-                            (IConfigConverter?)ReflectionTools.CreateInstance(converter, args);
-                        Converters.Add(converter, converterIns ?? throw new InvalidOperationException());
-                    }
-
-                    cfgVal = lastElement.GetValue(Converters[converter]);
-                }
-
-                property.Item1.SetValue(configurable, cfgVal);
-            }
-        }
+        
 
         internal void InitCommand(Dictionary<Type,object[]>? commandTypeArgs = null)
         {
             Type[] commandTypes =
-                ReflectionTools.GetTypesWithInterface(Assembly.GetExecutingAssembly(), nameof(ICommandProcessor));
+                ReflectionTools.GetTypesWithInterface<ICommandProcessor>(Assembly.GetExecutingAssembly());
             foreach (Type commandType in commandTypes)
             {
                 var args = Array.Empty<object>();
@@ -95,6 +50,25 @@ namespace InfoReader
                 if (commandProcessor == null)
                     continue;
                 _commandProcessors.Add(commandProcessor.MainCommand, commandProcessor);
+            }
+        }
+
+        internal void ScanConfigurations(Dictionary<Type, object[]>? commandTypeArgs = null)
+        {
+            var types = ReflectionTools.GetTypesWithInterface<IConfigurable>(Assembly.GetExecutingAssembly());
+            foreach (var type in types)
+            {
+                object[] args = Array.Empty<object>();
+                if (commandTypeArgs != null && commandTypeArgs.ContainsKey(type))
+                {
+                    args = commandTypeArgs[type];
+                }                    //ReflectionTools.CreateInstance<IConfigurable>(args);
+                var configuration = (IConfigurable?)ReflectionTools.CreateInstance(type, args);
+                if (configuration == null)
+                {
+                    continue;
+                }
+                Configurables.Add(configuration.ConfigArgName, configuration);
             }
         }
 
@@ -112,13 +86,12 @@ namespace InfoReader
             Environment.CurrentDirectory = currentDir;
             var configElement = new TomlConfigElement("InfoReaderConfig.toml");
             ConfigElement = configElement;
-            Dictionary<Type, object[]> converterTypesArgs = new Dictionary<Type, object[]>
+            Dictionary<Type, object?[]> converterTypesArgs = new Dictionary<Type, object?[]>
             {
-                {typeof(MmfsConverter), new object[] {this}},
-                {typeof(BeatmapReadMethodsConverter), new object[]{this}}
+                {typeof(MmfListConverter), new object[] {this}}
             };
-            InitConfig(Configuration, configElement, converterTypesArgs);
-            InitConfig(MmfConfiguration, configElement, converterTypesArgs);
+            ScanConfigurations();
+            ConfigTools.ReadConfigFile(Configurables.Values.ToArray(), converterTypesArgs);
             InitCommand();
             LocalizationInfo.Current = LocalizationInfo.GetLocalizationInfo(Configuration.LanguageId);
             EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(Loaded);

@@ -26,5 +26,13 @@ namespace InfoReader.Tools
             }
             return false;
         }
+
+        public static Process? StartProcess(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                return null;
+            ProcessStartInfo startInfo = new ProcessStartInfo(fileName);
+            return Process.Start(startInfo);
+        }
     }
 }

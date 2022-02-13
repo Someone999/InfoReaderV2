@@ -3,6 +3,15 @@ using System.Globalization;
 
 namespace InfoReader.Tools.I8n
 {
+
+    public class TranslationDictionary : Dictionary<string, string>
+    {
+        public new string this[string key]
+        {
+            get => ContainsKey(key) ? base[key] : "null";
+            set => base[key] = value;
+        }
+    }
     public class LocalizationInfo : ILocalizationInfo
     {
         private static Dictionary<string, LocalizationInfo> _localizationInfos = new();
@@ -52,7 +61,7 @@ namespace InfoReader.Tools.I8n
         public string CultureShortName { get; }
         public string CultureName { get; }
         public CultureInfo Culture { get; }
-        public Dictionary<string, string> Translations { get; private set; } = new();
+        public TranslationDictionary Translations { get; private set; } = new();
         public static LocalizationInfo Default { get; } = GetLocalizationInfo("en-us");
         public static LocalizationInfo SystemCulture { get; } = GetLocalizationInfo(CultureInfo.CurrentCulture);
         private static LocalizationInfo _current = SystemCulture;

@@ -8,6 +8,6 @@ namespace InfoReader.Tools.I8n
     {
         string CultureName { get; }
         CultureInfo Culture { get; }
-        Dictionary<string,string> Translations { get; }
+        TranslationDictionary Translations { get; }
     }
 }

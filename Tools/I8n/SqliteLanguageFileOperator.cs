@@ -14,13 +14,13 @@ namespace InfoReader.Tools.I8n
             return connection;
         }
 
-        public Dictionary<string, string> ReadAll(string languageId)
+        public TranslationDictionary ReadAll(string languageId)
         {
             SQLiteConnection connection = CreateAndOpenConnection("DataSource=InfoReader.db");
             var command = connection.CreateCommand();
             command.CommandText = $"select * from '{languageId}'";
             var reader = command.ExecuteReader();
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            TranslationDictionary result = new TranslationDictionary();
             while (reader.Read())
             {
                 result.Add(reader["Name"].ToString(),reader["Content"].ToString());

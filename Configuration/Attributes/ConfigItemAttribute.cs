@@ -1,7 +1,8 @@
 ﻿
 using System;
+using InfoReader.Tools.I8n;
 
-namespace InfoReader.Configuration.Attribute
+namespace InfoReader.Configuration.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class ConfigItemAttribute : System.Attribute
@@ -12,7 +13,15 @@ namespace InfoReader.Configuration.Attribute
         public ConfigItemAttribute(string configPath = "", string? displayName = null, Type? converterType = null)
         {
             ConfigPath = configPath;
-            DisplayName = displayName;
+            if (displayName != null && displayName.StartsWith("L::"))
+            {
+                var translations = LocalizationInfo.Current.Translations;
+                var key = displayName.Substring(3);
+                if (translations.ContainsKey(key))
+                {
+                    DisplayName = LocalizationInfo.Current.Translations[key];
+                }
+            }
             ConverterType = converterType;
         }
     }

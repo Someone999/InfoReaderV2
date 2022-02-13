@@ -23,8 +23,13 @@ namespace InfoReader.Command
 
         public bool Execute(InfoReaderPlugin instance, CommandParser parser)
         {
+            var processes = ProcessTools.FindProcess("osu!");
+            if (processes.Length == 0)
+            {
+
+            }
             IInjector injector = new Injector();
-            var osu = ProcessTools.FindProcess("osu!")[0];
+            var osu = processes[0];
             var path = $"{Environment.CurrentDirectory}\\..\\overlay.dll";
             if (!injector.Inject(osu.Id, path))
             {

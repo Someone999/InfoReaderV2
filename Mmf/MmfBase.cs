@@ -9,7 +9,7 @@ using YamlDotNet.Serialization;
 
 namespace InfoReader.Mmf
 {
-    public abstract class MmfBase: EqualityComparer<MmfBase>
+    public abstract class MmfBase: EqualityComparer<MmfBase>, IMmf
     {
         readonly System.Timers.Timer _fileReadTimer = new System.Timers.Timer();
         public string Name { get; set; }

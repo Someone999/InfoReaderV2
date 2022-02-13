@@ -12,7 +12,7 @@ namespace InfoReader.Mmf.Filters
         private static readonly object StaticLocker = new object();
         private void InitFilters()
         {
-            Type[] types = ReflectionTools.GetTypesWithInterface(Assembly.GetExecutingAssembly(), nameof(IMmfFilter));
+            Type[] types = ReflectionTools.GetTypesWithInterface<IMmfFilter>(Assembly.GetExecutingAssembly());
             foreach (var type in types)
             {
                 IMmfFilter? filter = ReflectionTools.CreateInstance(type, Array.Empty<object>()) as IMmfFilter;

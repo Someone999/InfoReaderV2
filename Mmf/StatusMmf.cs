@@ -4,7 +4,7 @@ using osuTools.OrtdpWrapper;
 
 namespace InfoReader.Mmf;
 
-public class StatusMmf: MmfBase
+public class StatusMmf: MmfBase, IStatusMmf
 {
     public OsuGameStatus EnabledStatus { get; set; }
     public StatusMmf(string name, OsuGameStatus status) : base(name)

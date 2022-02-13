@@ -9,11 +9,6 @@ namespace InfoReader.Configuration.Converter
 {
     public class BeatmapReadMethodsConverter: IConfigConverter<OrtdpWrapper.BeatmapReadMethods>
     {
-        private InfoReaderPlugin? _plugin;
-        public BeatmapReadMethodsConverter(InfoReaderPlugin plugin)
-        {
-            _plugin = plugin;
-        }
         object? IConfigConverter.Convert(object? value)
         {
             return Convert(value);
@@ -29,10 +24,6 @@ namespace InfoReader.Configuration.Converter
             if (value is string s)
             {
                 var method = (OrtdpWrapper.BeatmapReadMethods) Enum.Parse(typeof(OrtdpWrapper.BeatmapReadMethods), s);
-                if (_plugin?.MemoryDataSource is OrtdpWrapper ortdp)
-                {
-                    ortdp.BeatmapReadMethod = method;
-                }
                 return method;
             }
             throw new ArgumentException();

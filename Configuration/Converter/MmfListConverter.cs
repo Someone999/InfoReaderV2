@@ -8,10 +8,10 @@ using InfoReader.Mmf.Filters;
 
 namespace InfoReader.Configuration.Converter
 {
-    public class MmfsConverter : IConfigConverter<List<Mmf.MmfBase>>
+    public class MmfListConverter : IConfigConverter<List<Mmf.MmfBase>>
     {
         protected InfoReaderPlugin Plugin;
-        public MmfsConverter(InfoReaderPlugin infoReader)
+        public MmfListConverter(InfoReaderPlugin infoReader)
         {
             Plugin = infoReader;
         }

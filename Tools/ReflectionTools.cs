@@ -14,6 +14,10 @@ namespace InfoReader.Tools
 
         public static object? CreateInstance(Type t, object?[] arguments)
         {
+            if (t.IsInterface || t.IsAbstract)
+            {
+                return null;
+            }
             var constructor = t.GetConstructor(GetParameterTypes(arguments));
             List<ConstructorInfo> matchedConstructors = new List<ConstructorInfo>();
             if (constructor == null)
@@ -39,12 +43,12 @@ namespace InfoReader.Tools
 
         public static T? CreateInstance<T>(object[] arguments) => (T?)CreateInstance(typeof(T), arguments);
 
-        public static Type[] GetTypesWithInterface(Assembly asm, string interfaceName)
+        public static Type[] GetTypesWithInterface<T>(Assembly asm)
         {
             List<Type> types = new List<Type>();
             foreach (var type in asm.GetTypes())
             {
-                if (type.GetInterface(interfaceName) != null)
+                if (type.GetInterface(typeof(T).FullName) != null)
                 {
                     types.Add(type);
                 }

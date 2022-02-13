@@ -15,7 +15,7 @@ public class StatusMmfFilter: IMmfFilter
             return OsuGameStatus.Unkonwn;
         }
 
-        string[] stats = input.Split(',');
+        string[] stats = input.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
         OsuGameStatus status = 0;
         foreach (var stat in stats)
         {
@@ -24,6 +24,7 @@ public class StatusMmfFilter: IMmfFilter
 
         return status;
     }
+
     public MmfBase Filter(Dictionary<string, object> config)
     {
         string name = config["Name"].ToString();

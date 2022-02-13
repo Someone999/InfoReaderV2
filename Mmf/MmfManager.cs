@@ -59,6 +59,8 @@ namespace InfoReader.Mmf
             }
             else
             {
+                if (!_updatingMmfs.ContainsKey(mmf.Name))
+                    return;
                 _updatingMmfs[mmf.Name].Item2.Cancel();
                 _updatingMmfs.Remove(mmf.Name);
                 Logger.LogNotification($"[Mmf::{mmf.Name}] Disabled.");

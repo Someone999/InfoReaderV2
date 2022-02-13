@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using osuTools.Game.Modes;
 
 namespace InfoReader.Mmf.Filters;
@@ -7,33 +8,45 @@ public class ModeMmfFilter : IMmfFilter
 {
     public string MmfType => "ModeMmf";
 
-    public static OsuGameMode ModeProcessor(string input)
+    public static MmfGameMode ModeProcessor(string input)
     {
         if (string.IsNullOrEmpty(input))
         {
-            return OsuGameMode.Unknown;
+            return MmfGameMode.Unknown;
         }
 
         input = input.ToLower();
         return input switch
         {
-            "osu" => OsuGameMode.Osu,
-            "std" => OsuGameMode.Osu,
-            "taiko" => OsuGameMode.Taiko,
-            "ctb" => OsuGameMode.Catch,
-            "catch" => OsuGameMode.Catch,
-            "mania" => OsuGameMode.Mania,
-            "0" => OsuGameMode.Osu,
-            "1" => OsuGameMode.Taiko,
-            "2" => OsuGameMode.Catch,
-            "3" => OsuGameMode.Mania,
-            _ => OsuGameMode.Unknown
+            "osu" => MmfGameMode.Osu,
+            "std" => MmfGameMode.Osu,
+            "taiko" => MmfGameMode.Taiko,
+            "ctb" => MmfGameMode.Catch,
+            "catch" => MmfGameMode.Catch,
+            "mania" => MmfGameMode.Mania,
+            "0" => MmfGameMode.Osu,
+            "1" => MmfGameMode.Taiko,
+            "2" => MmfGameMode.Catch,
+            "3" => MmfGameMode.Mania,
+            _ => MmfGameMode.Unknown
         };
     }
+
+    public static MmfGameMode MulGameModeProcessor(string input)
+    {
+        MmfGameMode baseMode = 0;
+        string[] modes = input.Split(new []{','} , StringSplitOptions.RemoveEmptyEntries);
+        foreach (var mode in modes)
+        {
+            baseMode |= ModeProcessor(mode);
+        }
+        return baseMode;
+    }
+
     public MmfBase Filter(Dictionary<string, object> config)
     {
         string name = config["Name"].ToString();
-        ModeMmf mmf = new ModeMmf(name, ModeProcessor(config["Mode"].ToString()))
+        ModeMmf mmf = new ModeMmf(name, MulGameModeProcessor(config["Mode"].ToString()))
         {
             FormatFile = config["FormatFile"].ToString(),
             Enabled = bool.Parse(config["Enabled"].ToString())
