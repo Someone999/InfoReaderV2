@@ -14,7 +14,7 @@ namespace InfoReader.Tools.I8n
     }
     public class LocalizationInfo : ILocalizationInfo
     {
-        private static Dictionary<string, LocalizationInfo> _localizationInfos = new();
+        private static readonly Dictionary<string, LocalizationInfo> LocalizationInfos = new();
 
         private LocalizationInfo(string cultureName, bool loadTranslations = true)
         {
@@ -29,9 +29,9 @@ namespace InfoReader.Tools.I8n
 
         public static LocalizationInfo GetLocalizationInfo(string cultureName, bool loadTranslations = true)
         {
-            if (!_localizationInfos.ContainsKey(cultureName.ToLower()))
-                _localizationInfos.Add(cultureName.ToLower(), new LocalizationInfo(cultureName));
-            return _localizationInfos[cultureName.ToLower()];
+            if (!LocalizationInfos.ContainsKey(cultureName.ToLower()))
+                LocalizationInfos.Add(cultureName.ToLower(), new LocalizationInfo(cultureName));
+            return LocalizationInfos[cultureName.ToLower()];
         }
 
         private LocalizationInfo(CultureInfo cultureInfo)
@@ -44,19 +44,18 @@ namespace InfoReader.Tools.I8n
 
         public static LocalizationInfo GetLocalizationInfo(CultureInfo cultureInfo)
         {
-            if (!_localizationInfos.ContainsKey(cultureInfo.Name.ToLower()))
-                _localizationInfos.Add(cultureInfo.Name.ToLower(), new LocalizationInfo(cultureInfo));
-            return _localizationInfos[cultureInfo.Name.ToLower()];
+            if (!LocalizationInfos.ContainsKey(cultureInfo.Name.ToLower()))
+                LocalizationInfos.Add(cultureInfo.Name.ToLower(), new LocalizationInfo(cultureInfo));
+            return LocalizationInfos[cultureInfo.Name.ToLower()];
         }
 
         void TryGetTranslation(ILanguageFileOperator fileOperator, string languageId)
         {
             Translations = fileOperator.ReadAll(languageId.ToLower());
-            if (Translations.Count == 0)
-            {
-                Logger.LogError("No translation for this language now. English will be used.");
-                TryGetTranslation(fileOperator, "en-us");
-            }
+            if (Translations.Count != 0) 
+                return;
+            Logger.LogError("No translation for this language now. English will be used.");
+            TryGetTranslation(fileOperator, "en-us");
         }
         public string CultureShortName { get; }
         public string CultureName { get; }

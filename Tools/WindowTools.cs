@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using InfoReader.Configuration;
 using InfoReader.Configuration.Attributes;
 using InfoReader.Configuration.Converter;
+using InfoReader.Tools.I8n;
 
 namespace InfoReader.Tools
 {
@@ -48,7 +49,7 @@ namespace InfoReader.Tools
             {
                 CheckBox checkBox = new CheckBox();
                 checkBox.Text = displayName;
-                checkBox.Font = new Font(new FontFamily("微软雅黑"), 9);
+                checkBox.Font = new Font(new FontFamily("微软雅黑"), 8.8f);
                 checkBox.Checked = (bool)info.Item1.GetValue(ins);
                 checkBox.CheckStateChanged += (sender, args) =>
                 {
@@ -68,12 +69,13 @@ namespace InfoReader.Tools
             {
                 Label l = new Label();
                 l.Text = displayName;
-                l.Font = new Font(new FontFamily("微软雅黑"), 9);
+                l.Font = new Font(new FontFamily("微软雅黑"), 8.7f);
+                l.AutoSize = true;
                 ComboBox comboBox = new ComboBox();
                 comboBox.DataSource = lst.Items;
                 comboBox.SelectedItem = lst.DefaultSelection;
                 comboBox.Width = 100;
-                comboBox.Font = new Font(new FontFamily("微软雅黑"), 9);
+                comboBox.Font = new Font(new FontFamily("微软雅黑"), 8.7f);
                 return (l, comboBox);
             }
 
@@ -81,10 +83,12 @@ namespace InfoReader.Tools
             {
                 Label l = new Label();
                 l.Text = displayName;
-                l.Font = new Font(new FontFamily("微软雅黑"), 9);
+                l.Font = new Font(new FontFamily("微软雅黑"), 8.7f);
+                l.AutoSize = true;
+                l.Width += 50;
                 TextBox t = new TextBox();
-                t.Left = l.Width + l.Left + 50;
-                t.Font = new Font(new FontFamily("微软雅黑"), 9);
+                t.Left = l.Width + l.Left + 100;
+                t.Font = new Font(new FontFamily("微软雅黑"), 8.7f);
                 t.Text = info.Item1.GetValue(ins).ToString();
                 t.TextChanged += (sender, args) =>
                 {
@@ -142,7 +146,7 @@ namespace InfoReader.Tools
                     var attrs = property.Item1.GetCustomAttributes(typeof(ConfigTypeAttribute), true);
                     if (attrs.Length > 1)
                     {
-                        Logger.LogError("Too many type attributes.");
+                        Logger.LogError(LocalizationInfo.Current.Translations["LANG_ERR_TOOMANYATTR"]);
                         foreach (var attr in attrs)
                         {
                             Logger.LogError(attr.GetType().ToString());
@@ -162,7 +166,6 @@ namespace InfoReader.Tools
                     {
                         Control lastCtrl = LastOf<Control>(f.Controls);
                         controlTuple.Item1.Top += lastCtrl.Top + lastCtrl.Height + 20;
-                        controlTuple.Item1.AutoSize = true;
                     }
                     f.Controls.Add(controlTuple.Item1);
                     width += controlTuple.Item1.Width + controlTuple.Item1.Left;
@@ -173,7 +176,7 @@ namespace InfoReader.Tools
                     Label? lb = controlTuple.Item1 as Label;
                     if (f.Controls.Count > 0)
                     {
-                        controlTuple.Item2.Top = lb?.Top ?? controlTuple.Item2.Top;
+                        controlTuple.Item2.Top = lb?.Top ?? LastOf<Control>(f.Controls).Top + controlTuple.Item2.Height;
                         controlTuple.Item2.Left = lb?.Left + lb?.Width + 20 ?? controlTuple.Item2.Left;
                         controlTuple.Item2.Width = 200;
                     }
@@ -184,16 +187,17 @@ namespace InfoReader.Tools
                 widths.Add(width);
             }
             var lastControl = LastOf<Control>(f.Controls);
-            f.Width = widths.Max();
+            f.Width = widths.Max() + 50;
             f.AutoSize = true;
             f.Height = 500;
             f.Controls.Add(new Button
             {
-                Text = "Save",
+                Text = LocalizationInfo.Current.Translations["LANG_UI_BTN_SAVE"],
                 Width = 100, 
                 Height = 60, 
                 Top = lastControl.Top + 50, 
-                Left = f.Width - 150
+                Left = f.Width - 150,
+                Font = new Font(new FontFamily("微软雅黑"), 8.7f)
             });
             return f;
         }

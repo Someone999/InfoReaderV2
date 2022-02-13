@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using InfoReader.Command.Parser;
 using InfoReader.Tools;
+using InfoReader.Tools.I8n;
 
 namespace InfoReader.Command
 {
@@ -17,7 +18,9 @@ namespace InfoReader.Command
        
         public string GetHelp()
         {
-            throw new NotImplementedException();
+            return LocalizationInfo.Current.Translations["LANG_HELP_OPENER"] +
+                "getinfo open beatmap <page> [BeatmapId]\n" +
+                "getinfo open <beatmapfolder|musicfolder|bgfolder|videofolder|oszfolder>";
         }
 
         public static void Open(string target) => ProcessTools.StartProcess(target);
@@ -30,6 +33,14 @@ namespace InfoReader.Command
                 return true;
             switch (args[0])
             {
+                case "beatmapfolder":
+                    string? folder = instance.MemoryDataSource?.Beatmap.BeatmapFolder;
+                    if (string.IsNullOrEmpty(folder)) 
+                        return true;
+#pragma warning disable
+                    Open(folder);
+#pragma warning restore
+                    break;
                 case "oszfolder": 
                     Open(instance.Configuration.BeatmapCopyDirectory);
                     break;

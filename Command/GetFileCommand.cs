@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using InfoReader.Command.Parser;
 using InfoReader.Tools;
+using InfoReader.Tools.I8n;
 using osuTools.GameInfo;
 
 namespace InfoReader.Command
@@ -19,7 +20,7 @@ namespace InfoReader.Command
         public bool OnUnhandledException(InfoReaderPlugin instance, Exception exception) => false;
         public string GetHelp()
         {
-            throw new NotImplementedException();
+            return LocalizationInfo.Current.Translations["LANG_HELP_FILEGETTER"];
         }
 
         void InitDirectory(InfoReaderPlugin instance)
@@ -55,7 +56,7 @@ namespace InfoReader.Command
             var beatmap = instance.MemoryDataSource?.Beatmap;
             if (beatmap == null)
             {
-                Logger.LogError("No beatmap selected.");
+                Logger.LogError(LocalizationInfo.Current.Translations["LANG_ERR_NOBEATMAP"]);
                 return true;
             }
             switch (fileType)
@@ -63,7 +64,7 @@ namespace InfoReader.Command
                 case "video":
                     if (!beatmap.HasVideo)
                     {
-                        Logger.LogWarning("Beatmap has no video.");
+                        Logger.LogWarning(LocalizationInfo.Current.Translations["LANG_ERR_NOVIDEO"]);
                         return true;
                     }
                     oriFileName = beatmap.FullVideoFileName;
@@ -88,7 +89,7 @@ namespace InfoReader.Command
                         $"{beatmap.BeatmapSetId} {beatmap.Artist}-{beatmap.Title}.osz");
                     ZipFile.CreateFromDirectory
                         (Path.Combine(info.BeatmapDirectory, beatmap.BeatmapFolder), des);
-                    Logger.Log("Completed.");
+                    Logger.Log(LocalizationInfo.Current.Translations["LANG_INFO_COMPRESSED"]);
                     return true;
                 default: 
                     Logger.LogError("Not supported option.");
@@ -98,11 +99,11 @@ namespace InfoReader.Command
             try
             {
                 File.Copy(oriFileName, fileName);
-                Logger.Log("Completed.");
+                Logger.Log(LocalizationInfo.Current.Translations["LANG_INFO_COPYSUCCESS"]);
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed.");
+                Logger.LogError(LocalizationInfo.Current.Translations["LANG_INFO_COPYFAILED"]);
                 Logger.LogError(e.Message);
                 
             }

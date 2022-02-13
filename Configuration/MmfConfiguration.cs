@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 using InfoReader.Configuration.Attributes;
 using InfoReader.Configuration.Converter;
@@ -22,8 +23,8 @@ namespace InfoReader.Configuration
         public string ConfigArgName => "mmf";
         [ConfigItem("MmfConfigs.Mmfs",converterType: typeof(MmfListConverter))]
         public List<MmfBase> MmfList { get; set; } = new();
-        [ConfigItem("MmfConfigs.Encoding")]
-        public string MmfEncoding { get; set; } = "UTF-8";
+        [ConfigItem("MmfConfigs.Encoding", "L::LANG_CFG_MMFENCODING",typeof(EncodingConverter))]
+        public Encoding MmfEncoding { get; set; } = Encoding.UTF8;
         public void Save(IConfigElement element, Dictionary<Type,object?[]>? typeConverterArgs)
         {
             Type cfgType = typeof(MmfConfiguration);

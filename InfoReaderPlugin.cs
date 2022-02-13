@@ -31,7 +31,7 @@ namespace InfoReader
 
         internal readonly Dictionary<string, IConfigurable> Configurables = new();
         internal readonly Dictionary<int, IConfigElement> ConfigElements = new();
-        private readonly Dictionary<string, ICommandProcessor> _commandProcessors = new();
+        internal readonly Dictionary<string, ICommandProcessor> CommandProcessors = new();
 
         
 
@@ -49,7 +49,7 @@ namespace InfoReader
                 ICommandProcessor? commandProcessor = (ICommandProcessor?) ReflectionTools.CreateInstance(commandType, args);
                 if (commandProcessor == null)
                     continue;
-                _commandProcessors.Add(commandProcessor.MainCommand, commandProcessor);
+                CommandProcessors.Add(commandProcessor.MainCommand, commandProcessor);
             }
         }
 
@@ -98,6 +98,24 @@ namespace InfoReader
             EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitSyncCommand);
             ThreadPool.QueueUserWorkItem(state =>
                 Variables = VariableTools.GetAvailableVariables(typeof(OrtdpWrapper)));
+            ThreadPool.QueueUserWorkItem(state => WaitingProcess());
+        }
+
+        void WaitingProcess()
+        {
+            Process[] processes;
+            while ((processes = ProcessTools.FindProcess("osu!")).Length == 0)
+            {
+                Thread.Sleep(3000);
+            }
+
+            if (processes.Length > 0)
+            {
+                string? dir = processes[0].MainModule.FileName;
+                if (string.IsNullOrEmpty(dir))
+                    return;
+                Configuration.GameDirectory = dir;
+            }
         }
 
         bool CommandProcessor(Arguments args)
@@ -106,9 +124,9 @@ namespace InfoReader
             try
             {
                 CommandParser parser = new CommandParser(args.ToArray());
-                if (_commandProcessors.ContainsKey(parser.MainCommand))
+                if (CommandProcessors.ContainsKey(parser.MainCommand))
                 {
-                    processor = _commandProcessors[parser.MainCommand];
+                    processor = CommandProcessors[parser.MainCommand];
                 }
 
                 if (processor == null)

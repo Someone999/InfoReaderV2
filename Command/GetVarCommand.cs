@@ -24,17 +24,9 @@ namespace InfoReader.Command
         {
             foreach (var arg in parser.Arguments)
             {
-                try
-                {
-                    var val = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(arg), instance.MemoryDataSource).Value;
+                var val = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(arg), instance.MemoryDataSource).Value;
                     Logger.Log(val?.ToString() ?? throw new ArgumentException());
-                }
-                catch (Exception)
-                {
-                    Logger.LogError("Error when getting value.");
-                }
             }
-
             return true;
         }
 

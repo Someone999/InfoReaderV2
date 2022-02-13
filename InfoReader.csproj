@@ -97,6 +97,7 @@
     <Compile Include="Command\ConfigCommand.cs" />
     <Compile Include="Command\GetFileCommand.cs" />
     <Compile Include="Command\GetVarCommand.cs" />
+    <Compile Include="Command\HelpCommand.cs" />
     <Compile Include="Command\ICommandProcessor.cs" />
     <Compile Include="Command\OpenCommand.cs" />
     <Compile Include="Command\Parser\CommandParser.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Configuration\Attributes\ConfigTypeAttribute.cs" />
     <Compile Include="Configuration\Attributes\ListAttribute.cs" />
     <Compile Include="Configuration\Converter\BeatmapReadMethodConverter.cs" />
+    <Compile Include="Configuration\Converter\EncodingConverter.cs" />
     <Compile Include="Configuration\Converter\IDictionaryConverter.cs" />
     <Compile Include="Configuration\Converter\YamlDictionaryConverter.cs" />
     <Compile Include="Configuration\Converter\MmfListConverter.cs" />

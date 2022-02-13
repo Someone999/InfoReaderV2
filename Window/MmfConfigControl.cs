@@ -53,13 +53,13 @@ namespace InfoReader.Window
         public void SetLocalization(LocalizationInfo localizationInfo)
         {
             var translations = localizationInfo.Translations;
-            lb_mmfNameTag.Text = translations["LANG_WINDOW_MMF_NAME"];
-            lb_modeTag.Text = translations["LANG_WINDOW_MMF_MODE"];
-            lb_statusTag.Text = translations["LANG_WINDOW_MMF_STATUS"];
-            lb_intervalTag.Text = translations["LANG_WINDOW_MMF_INTERVAL"];
-            chkBox_enabled.Text = translations["LANG_WINDOW_MMF_ENABLED"];
-            btn_save.Text = translations["LANG_WINDOW_MMF_SAVE"];
-            btn_configFormat.Text = translations["LANG_WINDOW_MMF_CONFIG_FORMAT"];
+            lb_mmfNameTag.Text = translations["LANG_UI_MMFCFG_NAME"];
+            lb_modeTag.Text = translations["LANG_UI_MMFCFG_MODE"];
+            lb_statusTag.Text = translations["LANG_UI_MMFCFG_STATUS"];
+            lb_intervalTag.Text = translations["LANG_UI_MMFCFG_INTERVAL"];
+            chkBox_enabled.Text = translations["LANG_UI_MMFCFG_ENABLED"];
+            btn_save.Text = translations["LANG_UI_MMFCFG_SAVE"];
+            btn_configFormat.Text = translations["LANG_UI_MMFCFG_CONFIG_FORMAT"];
         }
 
 

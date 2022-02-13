@@ -8,6 +8,7 @@ using InfoReader.Configuration.Converter;
 using InfoReader.Configuration.Elements;
 using InfoReader.Configuration.Gui;
 using InfoReader.Tools;
+using InfoReader.Tools.I8n;
 using osuTools.OrtdpWrapper;
 
 namespace InfoReader.Configuration
@@ -17,29 +18,43 @@ namespace InfoReader.Configuration
         public string ConfigFilePath => DefaultFilePath.CurrentConfigFile;
         public Type ConfigElementType => typeof(TomlConfigElement);
         public string ConfigArgName => "program";
-        [ConfigItem("Program.LanguageId")] 
-        public string LanguageId { get; set; } = "en-us";
+        private string _langId = "en-us";
+
+        [ConfigItem("Program.LanguageId", "L::LANG_CFG_LANGUAGEID")]
+        public string LanguageId
+        {
+            get => _langId;
+            set
+            {
+                if (value.Length < 5) 
+                    return;
+                LocalizationInfo.Current = LocalizationInfo.GetLocalizationInfo(value);
+                _langId = value;
+            }
+        }
 
         [Bool]
-        [ConfigItem("Program.DebugMode")]
+        [ConfigItem("Program.DebugMode", "L::LANG_CFG_DEBUGMODE")]
         public bool DebugMode { get; set; }
 
-        [ConfigItem("Program.OsuApiKey")] 
+        [ConfigItem("Program.OsuApiKey", "L::LANG_CFG_APIKEY")] 
         public string OsuApiKey { get; set; } = "";
 
-        [ConfigItem("Program.BeatmapCopyDirectory")]
+        [ConfigItem("Program.BeatmapCopyDirectory", "L::LANG_CFG_BEATMAPDIR")]
         public string BeatmapCopyDirectory { get; set; } = ".\\Beatmap\\Beatmap";
 
-        [ConfigItem("Program.AudioCopyDirectory")]
+        [ConfigItem("Program.AudioCopyDirectory", "L::LANG_CFG_AUDIODIR")]
         public string AudioCopyDirectory { get; set; } = ".\\Beatmap\\Audio";
 
-        [ConfigItem("Program.BackgroundCopyDirectory")]
+        [ConfigItem("Program.BackgroundCopyDirectory", "L::LANG_CFG_BGDIR")]
         public string BackgroundCopyDirectory { get; set; } = ".\\Beatmap\\Background";
 
-        [ConfigItem("Program.VideoCopyDirectory")]
+        [ConfigItem("Program.VideoCopyDirectory", "L::LANG_CFG_VIDEODIR")]
         public string VideoCopyDirectory { get; set; } = ".\\Beatmap\\Video";
+        [ConfigItem("Program.GamePath", "L::LANG_CFG_GAMEDIR")]
+        public string GameDirectory { get; set; } = "";
         [List("OsuDb","OsuDb", "Ortdp")]
-        [ConfigItem("Program.BeatmapReadMethod", converterType: typeof(BeatmapReadMethodsConverter))]
+        [ConfigItem("Program.BeatmapReadMethod", "L::LANG_CFG_READMETHOD", typeof(BeatmapReadMethodsConverter))]
         public OrtdpWrapper.BeatmapReadMethods ReadMethod { get; set; }
 
         
