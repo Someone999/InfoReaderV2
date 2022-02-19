@@ -140,5 +140,10 @@ namespace InfoReader.Window
             CheckedListBox checkedList = (CheckedListBox)sender;
             checkedList.ClearSelected();
         }
+        private void btn_configFormat_Click(object sender, EventArgs e)
+        {
+            FormatEditor editor = new FormatEditor(_mmfBase.FormatFile);
+            editor.Show();
+        }
     }
 }

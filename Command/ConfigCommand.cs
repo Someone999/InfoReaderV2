@@ -74,9 +74,12 @@ namespace InfoReader.Command
                         ConfigTools.RefreshConfig(instance);
                         return true;
                     case "restore":
-                        if (instance.ConfigElement is IConfigSerializer and IConfigWriter writer)
+                        foreach (var element in instance.ConfigElements)
                         {
-                            writer.WriteToFile(DefaultFilePath.CurrentConfigFile);
+                            if (element.Value is IConfigSerializer and IConfigWriter writer)
+                            {
+                                writer.WriteToFile("D:\\a\\s\\config.txt");
+                            }
                         }
                         ConfigTools.RefreshConfig(instance);
                         return true;

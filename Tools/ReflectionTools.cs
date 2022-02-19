@@ -68,6 +68,11 @@ namespace InfoReader.Tools
             }
             return propertyInfos.ToArray();
         }
+
+        public static object? GetPropertyValue(PropertyInfo property, object ins)
+        {
+            return property.GetValue(ins) ?? null;
+        }
     }
 
    

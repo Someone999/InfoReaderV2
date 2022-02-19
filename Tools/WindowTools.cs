@@ -49,7 +49,7 @@ namespace InfoReader.Tools
             {
                 CheckBox checkBox = new CheckBox();
                 checkBox.Text = displayName;
-                checkBox.Font = new Font(new FontFamily("微软雅黑"), 8.8f);
+                checkBox.Font = FontTools.MicrosoftYaHei;
                 checkBox.Checked = (bool)info.Item1.GetValue(ins);
                 checkBox.CheckStateChanged += (sender, args) =>
                 {
@@ -69,13 +69,13 @@ namespace InfoReader.Tools
             {
                 Label l = new Label();
                 l.Text = displayName;
-                l.Font = new Font(new FontFamily("微软雅黑"), 8.7f);
+                l.Font = FontTools.MicrosoftYaHei;
                 l.AutoSize = true;
                 ComboBox comboBox = new ComboBox();
                 comboBox.DataSource = lst.Items;
                 comboBox.SelectedItem = lst.DefaultSelection;
                 comboBox.Width = 100;
-                comboBox.Font = new Font(new FontFamily("微软雅黑"), 8.7f);
+                comboBox.Font = FontTools.MicrosoftYaHei;
                 return (l, comboBox);
             }
 
@@ -83,12 +83,12 @@ namespace InfoReader.Tools
             {
                 Label l = new Label();
                 l.Text = displayName;
-                l.Font = new Font(new FontFamily("微软雅黑"), 8.7f);
+                l.Font = FontTools.MicrosoftYaHei;
                 l.AutoSize = true;
                 l.Width += 50;
                 TextBox t = new TextBox();
                 t.Left = l.Width + l.Left + 100;
-                t.Font = new Font(new FontFamily("微软雅黑"), 8.7f);
+                t.Font = FontTools.MicrosoftYaHei;
                 t.Text = info.Item1.GetValue(ins).ToString();
                 t.TextChanged += (sender, args) =>
                 {
@@ -189,7 +189,7 @@ namespace InfoReader.Tools
             var lastControl = LastOf<Control>(f.Controls);
             f.Width = widths.Max() + 50;
             f.AutoSize = true;
-            f.Height = 500;
+            f.Height = widths.Max() + 50;
             f.Controls.Add(new Button
             {
                 Text = LocalizationInfo.Current.Translations["LANG_UI_BTN_SAVE"],
@@ -197,8 +197,8 @@ namespace InfoReader.Tools
                 Height = 60, 
                 Top = lastControl.Top + 50, 
                 Left = f.Width - 150,
-                Font = new Font(new FontFamily("微软雅黑"), 8.7f)
-            });
+                Font = FontTools.MicrosoftYaHei
+        });
             return f;
         }
     }

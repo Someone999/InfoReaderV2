@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -18,6 +19,7 @@ namespace InfoReader.Configuration
 {
     public class MmfConfiguration: IGuiConfigurable
     {
+        
         public string ConfigFilePath => DefaultFilePath.CurrentConfigFile;
         public Type ConfigElementType => typeof(TomlConfigElement);
         public string ConfigArgName => "mmf";
@@ -66,17 +68,20 @@ namespace InfoReader.Configuration
             form.Text = LocalizationInfo.Current.Translations["LANG_WINDOW_MMF_CONFIG_TITLE"];
             List<Control> controls = new List<Control>();
             int mmfWidth = 0, mmfHeight = 0;
+            Label l = new Label();
+            l.Top = 5;
+            l.Left = 0;
             for (int i = 0; i < MmfList.Count; i++)
             {
                 MmfConfigControl control = new(MmfList[i]);
                 mmfWidth = control.Width;
                 mmfHeight = control.Height;
-                control.Top = i * control.Height + 10 * i;
+                control.Top = i * control.Height + 10 * i + 50;
                 control.Visible = true;
                 controls.Add(control);
             }
             form.AutoScroll = true;
-            form.Width = mmfWidth + 20;
+            form.Width = mmfWidth + 50;
             form.Height = mmfHeight * (MmfList.Count > 3 ? 3 : MmfList.Count) + 30 * 3;
             form.Controls.AddRange(controls.ToArray());
         }

@@ -48,6 +48,10 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.TextEditor, Version=3.2.1.6466, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\CodeEditor\ICSharpCode.TextEditor\Project\bin\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
     <Reference Include="Nett, Version=0.15.0.0, Culture=neutral, PublicKeyToken=605dcfe7a1d3365b, processorArchitecture=MSIL">
       <HintPath>packages\Nett.0.15.0\lib\net40\Nett.dll</HintPath>
     </Reference>
@@ -159,6 +163,7 @@
     <Compile Include="Configuration\Elements\YamlConfigElement.cs" />
     <Compile Include="Tools\ConfigTools.cs" />
     <Compile Include="Tools\DefaultFilePath.cs" />
+    <Compile Include="Tools\FontTools.cs" />
     <Compile Include="Tools\GameModeTools.cs" />
     <Compile Include="Tools\PathTools.cs" />
     <Compile Include="Tools\I8n\ILanguageFileOperator.cs" />
@@ -175,6 +180,12 @@
     <Compile Include="Tools\Win32\Injector.cs" />
     <Compile Include="Tools\Win32\NativeApi.cs" />
     <Compile Include="Tools\WindowTools.cs" />
+    <Compile Include="Window\FormatEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Window\FormatEditor.Designer.cs">
+      <DependentUpon>FormatEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Window\MmfConfigControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -187,6 +198,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Window\FormatEditor.resx">
+      <DependentUpon>FormatEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Window\MmfConfigControl.resx">
       <DependentUpon>MmfConfigControl.cs</DependentUpon>
     </EmbeddedResource>

@@ -19,7 +19,6 @@ namespace InfoReader.Tools
 {
     public static class ConfigTools
     {
-
         public static Dictionary<Type, IConfigConverter> Converters { get; } = new();
         public static void SetConfig(string configPath, object val, IConfigElement element)
         {
@@ -40,32 +39,31 @@ namespace InfoReader.Tools
             {
                 {typeof(MmfListConverter), new object[] {instance}},
             };
-            ReadConfigFile(instance.Configurables.Values.ToArray(), converterTypesArgs);
+            ReadConfigFile(instance.Configurables.Values.ToArray(), converterTypesArgs, instance.ConfigElements);
             var mmfMgr = MmfManager.GetInstance(instance);
             mmfMgr.StopUpdate();
             mmfMgr.StartUpdate(100);
         }
 
-        public static void ReadConfigFile(IConfigurable[] configurableItems, Dictionary<Type, object?[]>? converterTypesArgs)
+        public static void ReadConfigFile(IConfigurable[] configurableItems, Dictionary<Type, object?[]>? converterTypesArgs, Dictionary<string, IConfigElement> configElements)
         {
-            Dictionary<int, IConfigElement> configElements = new Dictionary<int, IConfigElement>();
+            configElements.Clear();
             foreach (var configurable in configurableItems)
             {
                 IConfigElement? element;
-                if (configElements.ContainsKey(configurable.ConfigFilePath.GetHashCode()))
+                if (configElements.ContainsKey(configurable.ConfigFilePath))
                 {
-                    element = configElements[configurable.ConfigFilePath.GetHashCode()];
+                    element = configElements[configurable.ConfigFilePath];
                 }
                 else
                 {
                     element = (IConfigElement?)ReflectionTools.CreateInstance(configurable.ConfigElementType,
                         new object?[] { configurable.ConfigFilePath }) ?? throw new ArgumentException();
-                    configElements.Add(configurable.ConfigFilePath.GetHashCode(), element);
+                    configElements.Add(configurable.ConfigFilePath, element);
                 }
                 InitConfig(configurable, element, converterTypesArgs);
             }
         }
-
 
         public static void InitConfig(IConfigurable configurable, IConfigElement element, Dictionary<Type, object?[]>? converterTypeArgs = null)
         {

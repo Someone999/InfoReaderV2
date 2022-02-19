@@ -130,6 +130,7 @@
             this.btn_configFormat.TabIndex = 9;
             this.btn_configFormat.Text = "FormatEditElement";
             this.btn_configFormat.UseVisualStyleBackColor = true;
+            this.btn_configFormat.Click += new System.EventHandler(this.btn_configFormat_Click);
             // 
             // txBox_interval
             // 

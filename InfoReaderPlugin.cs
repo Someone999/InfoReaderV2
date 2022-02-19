@@ -30,7 +30,7 @@ namespace InfoReader
         private static readonly Dictionary<Type, IConfigConverter> Converters = new();
 
         internal readonly Dictionary<string, IConfigurable> Configurables = new();
-        internal readonly Dictionary<int, IConfigElement> ConfigElements = new();
+        internal readonly Dictionary<string, IConfigElement> ConfigElements = new();
         internal readonly Dictionary<string, ICommandProcessor> CommandProcessors = new();
 
         
@@ -76,7 +76,6 @@ namespace InfoReader
         public InfoReaderConfiguration Configuration { get; } = new();
         public MmfConfiguration MmfConfiguration { get; } = new();
         public IMemoryDataSource? MemoryDataSource { get; private set; }
-        public IConfigElement ConfigElement { get; internal set; }
 
         public Dictionary<string, PropertyInfo> Variables { get; private set; } = new();
         public InfoReaderPlugin() : base("InfoReader", "Someone999")
@@ -85,13 +84,14 @@ namespace InfoReader
             string currentDir = ".\\InfoReader\\";
             Environment.CurrentDirectory = currentDir;
             var configElement = new TomlConfigElement("InfoReaderConfig.toml");
-            ConfigElement = configElement;
             Dictionary<Type, object?[]> converterTypesArgs = new Dictionary<Type, object?[]>
             {
                 {typeof(MmfListConverter), new object[] {this}}
             };
             ScanConfigurations();
-            ConfigTools.ReadConfigFile(Configurables.Values.ToArray(), converterTypesArgs);
+            ConfigTools.ReadConfigFile(Configurables.Values.ToArray(), converterTypesArgs, ConfigElements);
+            Configuration = (InfoReaderConfiguration)Configurables["program"];
+            MmfConfiguration = (MmfConfiguration) Configurables["mmf"];
             InitCommand();
             LocalizationInfo.Current = LocalizationInfo.GetLocalizationInfo(Configuration.LanguageId);
             EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(Loaded);
@@ -109,13 +109,12 @@ namespace InfoReader
                 Thread.Sleep(3000);
             }
 
-            if (processes.Length > 0)
-            {
-                string? dir = processes[0].MainModule.FileName;
-                if (string.IsNullOrEmpty(dir))
-                    return;
-                Configuration.GameDirectory = dir;
-            }
+            if (processes.Length <= 0)
+                return;
+            string? dir = processes[0].MainModule.FileName;
+            if (string.IsNullOrEmpty(dir))
+                return;
+            Configuration.GameDirectory = dir;
         }
 
         bool CommandProcessor(Arguments args)
