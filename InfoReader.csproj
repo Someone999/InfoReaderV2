@@ -1,0 +1,249 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F4ED77EB-34F4-4860-8BE9-C121713CBD6C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>InfoReader</RootNamespace>
+    <AssemblyName>InfoReader</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <NoWarn>8632</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.TextEditor, Version=3.2.1.6466, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\CodeEditor\ICSharpCode.TextEditor\Project\bin\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Nett, Version=0.15.0.0, Culture=neutral, PublicKeyToken=605dcfe7a1d3365b, processorArchitecture=MSIL">
+      <HintPath>packages\Nett.0.15.0\lib\net40\Nett.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OsuRTDataProvider">
+      <HintPath>D:\Visual Studio 2017\projects\osuTools\osuTools\bin\Debug\OsuRTDataProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="osuTools">
+      <HintPath>D:\Visual Studio 2017\projects\osuTools\osuTools\bin\Debug\osuTools.dll</HintPath>
+    </Reference>
+    <Reference Include="RealTimePPDisplayer">
+      <HintPath>D:\Visual Studio 2017\projects\osuTools\osuTools\bin\Debug\RealTimePPDisplayer.dll</HintPath>
+    </Reference>
+    <Reference Include="Sync">
+      <HintPath>D:\Visual Studio 2017\projects\osuTools\osuTools\bin\Debug\Sync.exe</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\System.Data.SQLite.EF6.1.0.115.5\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\System.Data.SQLite.Linq.1.0.115.5\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="YamlDotNet, Version=11.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
+      <HintPath>packages\YamlDotNet.11.2.1\lib\net45\YamlDotNet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Command\ConfigCommand.cs" />
+    <Compile Include="Command\GetFileCommand.cs" />
+    <Compile Include="Command\GetVarCommand.cs" />
+    <Compile Include="Command\HelpCommand.cs" />
+    <Compile Include="Command\ICommandProcessor.cs" />
+    <Compile Include="Command\OpenCommand.cs" />
+    <Compile Include="Command\Parser\CommandParser.cs" />
+    <Compile Include="Command\ReinjectCommand.cs" />
+    <Compile Include="Configuration\Attributes\BoolAttribute.cs" />
+    <Compile Include="Configuration\Attributes\ConfigTypeAttribute.cs" />
+    <Compile Include="Configuration\Attributes\ListAttribute.cs" />
+    <Compile Include="Configuration\Converter\BeatmapReadMethodConverter.cs" />
+    <Compile Include="Configuration\Converter\EncodingConverter.cs" />
+    <Compile Include="Configuration\Converter\IDictionaryConverter.cs" />
+    <Compile Include="Configuration\Converter\YamlDictionaryConverter.cs" />
+    <Compile Include="Configuration\Converter\MmfListConverter.cs" />
+    <Compile Include="Configuration\Elements\IniConfigElement.cs" />
+    <Compile Include="Configuration\Elements\TomlConfigElement.cs" />
+    <Compile Include="Configuration\Gui\IGuiConfigurable.cs" />
+    <Compile Include="Configuration\IConfigWriter.cs" />
+    <Compile Include="Configuration\MmfConfiguration.cs" />
+    <Compile Include="Configuration\Serializer\IConfigSerializer.cs" />
+    <Compile Include="ExpressionMatcher\ValueExpressionMatcher.cs" />
+    <Compile Include="ExpressionParser\Nodes\BoolExpressionNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\ExpressionNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\ExpressionNodeType.cs" />
+    <Compile Include="ExpressionParser\Nodes\FunctionArgumentNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\FunctionNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\IdentifierNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\NullNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\NumberExpressionNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\OperatorExpressionNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\StringExpressionNode.cs" />
+    <Compile Include="ExpressionParser\Nodes\ValueExpressionNode.cs" />
+    <Compile Include="ExpressionParser\Tools\InternalMethods.cs" />
+    <Compile Include="ExpressionParser\Tools\RpnTools.cs" />
+    <Compile Include="ExpressionParser\Tools\ValueGettingHelper.cs" />
+    <Compile Include="ExpressionMatcher\IExpressionMatcher.cs" />
+    <Compile Include="Configuration\IBindableConfigurable.cs" />
+    <Compile Include="InfoReaderPlugin.cs" />
+    <Compile Include="Mmf\IMmf.cs" />
+    <Compile Include="Mmf\IModeMmf.cs" />
+    <Compile Include="Mmf\IStatusMmf.cs" />
+    <Compile Include="Mmf\MmfGameMode.cs" />
+    <Compile Include="Mmf\NormalMmf.cs" />
+    <Compile Include="PluginTestClass.cs" />
+    <Compile Include="Mmf\Filters\DefaultMmfFilter.cs" />
+    <Compile Include="Mmf\Filters\MmfFilters.cs" />
+    <Compile Include="Mmf\MmfBase.cs" />
+    <Compile Include="Mmf\Filters\IMmfFilter.cs" />
+    <Compile Include="Mmf\MmfManager.cs" />
+    <Compile Include="Mmf\ModeMmf.cs" />
+    <Compile Include="Mmf\Filters\ModeMmfFilter.cs" />
+    <Compile Include="Mmf\StatusMmf.cs" />
+    <Compile Include="Mmf\Filters\StatusMmfFilter.cs" />
+    <Compile Include="Mmf\StatusModeMmf.cs" />
+    <Compile Include="Mmf\Filters\StatusModeMmfFilter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Configuration\Attributes\ConfigItemAttribute.cs" />
+    <Compile Include="Configuration\InfoReaderConfiguration.cs" />
+    <Compile Include="Configuration\Converter\IConfigConverter.cs" />
+    <Compile Include="Configuration\IConfigurable.cs" />
+    <Compile Include="Configuration\Elements\YamlConfigElement.cs" />
+    <Compile Include="Tools\ConfigTools.cs" />
+    <Compile Include="Tools\DefaultFilePath.cs" />
+    <Compile Include="Tools\FontTools.cs" />
+    <Compile Include="Tools\GameModeTools.cs" />
+    <Compile Include="Tools\PathTools.cs" />
+    <Compile Include="Tools\I8n\ILanguageFileOperator.cs" />
+    <Compile Include="Tools\I8n\ILocalizationInfo.cs" />
+    <Compile Include="Configuration\Elements\IConfigElement.cs" />
+    <Compile Include="Tools\I8n\LocalizationInfo.cs" />
+    <Compile Include="Tools\I8n\SqliteLanguageFileOperator.cs" />
+    <Compile Include="Tools\Logger.cs" />
+    <Compile Include="Tools\ProcessTools.cs" />
+    <Compile Include="Tools\ReflectionTools.cs" />
+    <Compile Include="Tools\VariableTools.cs" />
+    <Compile Include="Tools\Win32\CppInjector.cs" />
+    <Compile Include="Tools\Win32\IInjector.cs" />
+    <Compile Include="Tools\Win32\Injector.cs" />
+    <Compile Include="Tools\Win32\NativeApi.cs" />
+    <Compile Include="Tools\WindowTools.cs" />
+    <Compile Include="Update\AvailabilityStatus.cs" />
+    <Compile Include="Update\InfoReaderUpdateTools.cs" />
+    <Compile Include="Update\InfoReadUrl.cs" />
+    <Compile Include="Update\PluginAvailabilityInfo.cs" />
+    <Compile Include="Update\PluginFile.cs" />
+    <Compile Include="Update\PluginUpdateFilesInfo.cs" />
+    <Compile Include="Update\Updater.cs" />
+    <Compile Include="Version\PluginVersion.cs" />
+    <Compile Include="Window\FormatEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Window\FormatEditor.Designer.cs">
+      <DependentUpon>FormatEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Window\GeneralSelectListWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Window\GeneralSelectListWindow.Designer.cs">
+      <DependentUpon>GeneralSelectListWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Window\MmfConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Window\MmfConfigControl.Designer.cs">
+      <DependentUpon>MmfConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Window\MmfSelectWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Window\MmfSelectWindow.Designer.cs">
+      <DependentUpon>MmfSelectWindow.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Window\FormatEditor.resx">
+      <DependentUpon>FormatEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Window\GeneralSelectListWindow.resx">
+      <DependentUpon>GeneralSelectListWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Window\MmfConfigControl.resx">
+      <DependentUpon>MmfConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Window\MmfSelectWindow.resx">
+      <DependentUpon>MmfSelectWindow.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+  </Target>
+  <Import Project="packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <Import Project="packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+</Project>
