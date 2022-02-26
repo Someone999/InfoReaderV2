@@ -15,7 +15,7 @@ namespace InfoReader.Command.Parser
             }
         }
 
-        readonly List<string> _argsList = new();
+        private readonly List<string> _argsList = new();
         public string MainCommand { get; } = string.Empty;
 
         public string[] Arguments => _argsList.ToArray();

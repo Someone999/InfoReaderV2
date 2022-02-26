@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,8 +10,8 @@ namespace InfoReader.Mmf
     public delegate void EnabledStateChangedEventHandler(MmfBase mmf, bool enabled);
     public class MmfManager
     {
-        readonly List<MmfBase> _mmfList = new List<MmfBase>();
-        readonly InfoReaderPlugin _plugin;
+        private readonly List<MmfBase> _mmfList = new List<MmfBase>();
+        private readonly InfoReaderPlugin _plugin;
 
         private readonly Dictionary<string, (MmfBase, CancellationTokenSource)> _updatingMmfs = new();
         private MmfManager(InfoReaderPlugin infoReader)
@@ -22,9 +23,9 @@ namespace InfoReader.Mmf
         public MmfBase? FindMmf(string mmf) => Mmfs.FirstOrDefault(m => m.Name == mmf);
        
 
-        public static MmfManager GetInstance(InfoReaderPlugin infoReader)
+        public static MmfManager GetInstance(InfoReaderPlugin? infoReader = null)
         {
-            return _mgr ??= CreateNewInstance(infoReader);
+            return _mgr ??= CreateNewInstance(infoReader ?? throw new InvalidOperationException());
         }
 
         internal static MmfManager CreateNewInstance(InfoReaderPlugin infoReader)
@@ -74,7 +75,7 @@ namespace InfoReader.Mmf
 
         public MmfBase[] Mmfs => _mmfList.ToArray();
 
-        void UpdateMmf(MmfBase mmf, CancellationToken cancellationToken)
+        private void UpdateMmf(MmfBase mmf, CancellationToken cancellationToken)
         {
             while (mmf.Enabled)
             {

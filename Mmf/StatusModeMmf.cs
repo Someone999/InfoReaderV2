@@ -7,6 +7,7 @@ namespace InfoReader.Mmf;
 
 public class StatusModeMmf : MmfBase, IStatusMmf, IModeMmf
 {
+    public override string MmfType => "StatusModeMmf";
     public MmfGameMode EnabledMode { get; set; }
     public OsuGameStatus EnabledStatus { get; set; }
     public StatusModeMmf(string name, MmfGameMode mode, OsuGameStatus status) : base(name)
@@ -26,4 +27,6 @@ public class StatusModeMmf : MmfBase, IStatusMmf, IModeMmf
             base.Update(instance);
         }
     }
+
+    
 }

@@ -13,16 +13,19 @@ namespace InfoReader.Configuration.Attributes
         public ConfigItemAttribute(string configPath = "", string? displayName = null, Type? converterType = null)
         {
             ConfigPath = configPath;
-            if (displayName != null && displayName.StartsWith("L::"))
+            ConverterType = converterType;
+            if (displayName == null)
+                return;
+            if (displayName.StartsWith("L::"))
             {
                 var translations = LocalizationInfo.Current.Translations;
                 var key = displayName.Substring(3);
-                if (translations.ContainsKey(key))
-                {
-                    DisplayName = LocalizationInfo.Current.Translations[key];
-                }
+                DisplayName = translations.ContainsKey(key) ? LocalizationInfo.Current.Translations[key] : "null";
             }
-            ConverterType = converterType;
+            else
+            {
+                DisplayName = displayName;
+            }
         }
     }
 }

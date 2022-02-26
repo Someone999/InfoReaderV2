@@ -13,4 +13,5 @@ public interface IMmf
     string Format { get; }
     event EnabledStateChangedEventHandler? OnEnabledStateChanged;
     void Update(InfoReaderPlugin instance);
+    string MmfType { get; }
 }

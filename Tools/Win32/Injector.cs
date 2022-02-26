@@ -6,13 +6,13 @@ namespace InfoReader.Tools.Win32;
 
 public class Injector:IInjector
 {
-    IntPtr GetLoadLibrary()
+    private IntPtr GetLoadLibrary()
     {
         IntPtr hKernel32 = NativeApi.GetModuleHandle("kernel32");
         return NativeApi.GetProcAddress(hKernel32, "LoadLibraryW");
     }
 
-    (IntPtr,int) WriteDllPath(IntPtr hProcess, string modulePath)
+    private (IntPtr,int) WriteDllPath(IntPtr hProcess, string modulePath)
     {
         byte[] bts = Encoding.UTF8.GetBytes(modulePath);
         IntPtr remote = NativeApi.VirtualAllocEx(hProcess, IntPtr.Zero, (uint) bts.Length, NativeApi.AllocationType.Commit,

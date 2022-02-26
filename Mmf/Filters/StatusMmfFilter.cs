@@ -29,7 +29,7 @@ public class StatusMmfFilter: IMmfFilter
     {
         string name = config["Name"].ToString();
         
-        StatusMmf mmf = new StatusMmf(name, StatusProcessor(config["Status"].ToString()))
+        StatusMmf mmf = new StatusMmf(name, StatusProcessor(config["EnabledStatus"].ToString()))
         {
             FormatFile = config["FormatFile"].ToString(),
             Enabled = bool.Parse(config["Enabled"].ToString())

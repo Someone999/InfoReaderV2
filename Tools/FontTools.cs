@@ -16,8 +16,6 @@ namespace InfoReader.Tools
         public bool Equals(FontInfo x, FontInfo y)
         {
             if (ReferenceEquals(x, y)) return true;
-            if (ReferenceEquals(x, null)) return false;
-            if (ReferenceEquals(y, null)) return false;
             if (x.GetType() != y.GetType()) return false;
             return x.FontName == y.FontName && x.FontSize.Equals(y.FontSize);
         }

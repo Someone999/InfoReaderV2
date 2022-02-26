@@ -55,6 +55,9 @@
     <Reference Include="Nett, Version=0.15.0.0, Culture=neutral, PublicKeyToken=605dcfe7a1d3365b, processorArchitecture=MSIL">
       <HintPath>packages\Nett.0.15.0\lib\net40\Nett.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="OsuRTDataProvider">
       <HintPath>D:\Visual Studio 2017\projects\osuTools\osuTools\bin\Debug\OsuRTDataProvider.dll</HintPath>
     </Reference>
@@ -180,17 +183,37 @@
     <Compile Include="Tools\Win32\Injector.cs" />
     <Compile Include="Tools\Win32\NativeApi.cs" />
     <Compile Include="Tools\WindowTools.cs" />
+    <Compile Include="Update\AvailabilityStatus.cs" />
+    <Compile Include="Update\InfoReaderUpdateTools.cs" />
+    <Compile Include="Update\InfoReadUrl.cs" />
+    <Compile Include="Update\PluginAvailabilityInfo.cs" />
+    <Compile Include="Update\PluginFile.cs" />
+    <Compile Include="Update\PluginUpdateFilesInfo.cs" />
+    <Compile Include="Update\Updater.cs" />
+    <Compile Include="Version\PluginVersion.cs" />
     <Compile Include="Window\FormatEditor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Window\FormatEditor.Designer.cs">
       <DependentUpon>FormatEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Window\GeneralSelectListWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Window\GeneralSelectListWindow.Designer.cs">
+      <DependentUpon>GeneralSelectListWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Window\MmfConfigControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Window\MmfConfigControl.Designer.cs">
       <DependentUpon>MmfConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Window\MmfSelectWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Window\MmfSelectWindow.Designer.cs">
+      <DependentUpon>MmfSelectWindow.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -201,8 +224,14 @@
     <EmbeddedResource Include="Window\FormatEditor.resx">
       <DependentUpon>FormatEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Window\GeneralSelectListWindow.resx">
+      <DependentUpon>GeneralSelectListWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Window\MmfConfigControl.resx">
       <DependentUpon>MmfConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Window\MmfSelectWindow.resx">
+      <DependentUpon>MmfSelectWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

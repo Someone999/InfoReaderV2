@@ -9,8 +9,8 @@ namespace InfoReader.Configuration.Elements
 {
     public class IniConfigElement : IConfigElement, IConfigWriter, IConfigSerializer
     {
-        Dictionary<string, object?> _config = new();
-        private object? _innerVal;
+        private readonly Dictionary<string, object?> _config = new();
+        private readonly object? _innerVal;
 
         public IniConfigElement(object? innerVal)
         {
@@ -23,7 +23,7 @@ namespace InfoReader.Configuration.Elements
             _innerVal = _config;
         }
 
-        void Parse(string[] lines)
+        private void Parse(string[] lines)
         {
             if (_innerVal != null)
             {
@@ -105,7 +105,7 @@ namespace InfoReader.Configuration.Elements
             File.WriteAllText(path, Serialize());
         }
 
-        string Extend(Dictionary<string, object>? config)
+        private string Extend(Dictionary<string, object>? config)
         {
             if (config == null)
                 return string.Empty;

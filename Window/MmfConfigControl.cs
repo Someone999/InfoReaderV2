@@ -16,8 +16,9 @@ namespace InfoReader.Window
 {
     public partial class MmfConfigControl : UserControl
     {
-        private MmfBase _mmfBase;
-        List<string> modes =
+        private readonly MmfBase _mmfBase;
+
+        private readonly List<string> modes =
             new(new []
             {
             "Osu",
@@ -25,7 +26,8 @@ namespace InfoReader.Window
             "Catch",
             "Mania"
             });
-        List<string> statuses = 
+
+        private readonly List<string> statuses = 
             new(new [] 
             {
             "SelectSong",
@@ -63,8 +65,9 @@ namespace InfoReader.Window
         }
 
 
-        string[] SplitEnum(string enumStr) => enumStr.Split(',').Select(s => s.Trim()).ToArray();
-        static string CombineEnum(IEnumerable enumerable)
+        private string[] SplitEnum(string enumStr) => enumStr.Split(',').Select(s => s.Trim()).ToArray();
+
+        private static string CombineEnum(IEnumerable enumerable)
         {
             StringBuilder builder = new StringBuilder();
             var array = enumerable as object[] ?? enumerable.Cast<object>().ToArray();
@@ -80,7 +83,7 @@ namespace InfoReader.Window
             return builder.ToString();
         }
 
-        void SetInformation(MmfBase mmf)
+        private void SetInformation(MmfBase mmf)
         {
             txBox_mmfName.Text = mmf.Name;
             txBox_interval.Text = mmf.UpdateInterval.ToString();

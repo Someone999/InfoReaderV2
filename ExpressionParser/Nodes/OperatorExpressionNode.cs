@@ -31,7 +31,7 @@ namespace InfoReader.ExpressionParser.Nodes
             Value = objNode;
         }
         public override ExpressionNodeType NodeType => ExpressionNodeType.Operator;
-        int _priority = -1;
+        private int _priority = -1;
         public int Priority => _priority == -1 ? _priority = GetPriority(Value as string ?? throw new InvalidCastException()) : _priority;
         public ValueExpressionNode Calculate(ValueExpressionNode? left, ValueExpressionNode right)
         {
@@ -65,7 +65,7 @@ namespace InfoReader.ExpressionParser.Nodes
             throw new InvalidOperationException();
         }
 
-        void CheckNull(params ExpressionNode?[] nodes)
+        private void CheckNull(params ExpressionNode?[] nodes)
         {
             foreach (var node in nodes)
             {
@@ -73,71 +73,70 @@ namespace InfoReader.ExpressionParser.Nodes
                     throw new ArgumentNullException();
             }
         }
-#pragma warning disable 8605
-        NumberExpressionNode Add(NumberExpressionNode a, NumberExpressionNode b)
+        private NumberExpressionNode Add(NumberExpressionNode a, NumberExpressionNode b)
         {
-            return new NumberExpressionNode((double)a.Value + (double)b.Value);
+            return new NumberExpressionNode((double)a.Value! + (double)b.Value!);
         }
 
-        NumberExpressionNode Sub(NumberExpressionNode a, NumberExpressionNode b)
+        private NumberExpressionNode Sub(NumberExpressionNode a, NumberExpressionNode b)
         {
-            return new NumberExpressionNode(-(double)a.Value + (double)b.Value);
+            return new NumberExpressionNode(-(double)a.Value! + (double)b.Value!);
         }
 
-        NumberExpressionNode Mul(NumberExpressionNode a, NumberExpressionNode b)
+        private NumberExpressionNode Mul(NumberExpressionNode a, NumberExpressionNode b)
         {
-            return new NumberExpressionNode((double)a.Value * (double)b.Value);
+            return new NumberExpressionNode((double)a.Value! * (double)b.Value!);
         }
 
-        NumberExpressionNode Div(NumberExpressionNode a, NumberExpressionNode b)
+        private NumberExpressionNode Div(NumberExpressionNode a, NumberExpressionNode b)
         {
-            return new NumberExpressionNode((double)a.Value / (double)b.Value);
+            return new NumberExpressionNode((double)a.Value! / (double)b.Value!);
         }
 
-        BoolExpressionNode Equals(ValueExpressionNode a, ValueExpressionNode b)
+        private BoolExpressionNode Equals(ValueExpressionNode a, ValueExpressionNode b)
         {
             return new BoolExpressionNode(a.Equals(b));
         }
-        BoolExpressionNode NotEquals(ValueExpressionNode a, ValueExpressionNode b)
+
+        private BoolExpressionNode NotEquals(ValueExpressionNode a, ValueExpressionNode b)
         {
             return new BoolExpressionNode(!a.Equals(b));
         }
 
-        BoolExpressionNode BoolAnd(BoolExpressionNode a, BoolExpressionNode b)
+        private BoolExpressionNode BoolAnd(BoolExpressionNode a, BoolExpressionNode b)
         {
-            return new BoolExpressionNode((bool)a.Value && (bool)b.Value);
+            return new BoolExpressionNode((bool)a.Value! && (bool)b.Value!);
         }
 
-        BoolExpressionNode BoolOr(BoolExpressionNode a, BoolExpressionNode b)
+        private BoolExpressionNode BoolOr(BoolExpressionNode a, BoolExpressionNode b)
         {
-            return new BoolExpressionNode((bool)a.Value || (bool)b.Value);
+            return new BoolExpressionNode((bool)a.Value! || (bool)b.Value!);
         }
 
-        BoolExpressionNode Greater(NumberExpressionNode a, NumberExpressionNode b)
+        private BoolExpressionNode Greater(NumberExpressionNode a, NumberExpressionNode b)
         {
-            return new BoolExpressionNode((double)a.Value > (double)b.Value);
+            return new BoolExpressionNode((double)a.Value! > (double)b.Value!);
         }
 
-        BoolExpressionNode Less(NumberExpressionNode a, NumberExpressionNode b)
+        private BoolExpressionNode Less(NumberExpressionNode a, NumberExpressionNode b)
         {
-            return new BoolExpressionNode((double)a.Value < (double)b.Value);
+            return new BoolExpressionNode((double)a.Value! < (double)b.Value!);
         }
 
-        BoolExpressionNode GreaterOrEquals(NumberExpressionNode a, NumberExpressionNode b)
+        private BoolExpressionNode GreaterOrEquals(NumberExpressionNode a, NumberExpressionNode b)
         {
-            return new BoolExpressionNode((double)a.Value >= (double)b.Value);
+            return new BoolExpressionNode((double)a.Value! >= (double)b.Value!);
         }
 
-        BoolExpressionNode LessOrEquals(NumberExpressionNode a, NumberExpressionNode b)
+        private BoolExpressionNode LessOrEquals(NumberExpressionNode a, NumberExpressionNode b)
         {
             return new BoolExpressionNode((double)a.Value <= (double)b.Value);
         }
 
-        BoolExpressionNode Not(BoolExpressionNode right)
+        private BoolExpressionNode Not(BoolExpressionNode right)
         {
             return new BoolExpressionNode(!(bool)right.Value);
         }
-#pragma warning restore 8605
     }
 
 }

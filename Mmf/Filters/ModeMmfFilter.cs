@@ -46,7 +46,7 @@ public class ModeMmfFilter : IMmfFilter
     public MmfBase Filter(Dictionary<string, object> config)
     {
         string name = config["Name"].ToString();
-        ModeMmf mmf = new ModeMmf(name, MulGameModeProcessor(config["Mode"].ToString()))
+        ModeMmf mmf = new ModeMmf(name, MulGameModeProcessor(config["EnabledMode"].ToString()))
         {
             FormatFile = config["FormatFile"].ToString(),
             Enabled = bool.Parse(config["Enabled"].ToString())

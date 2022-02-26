@@ -20,18 +20,25 @@ namespace InfoReader.Configuration.Converter
             return Convert(value);
         }
 
+        public object? ToValue(object? value)
+        {
+            return null;
+        }
+
         public Dictionary<string, object> ToDictionary(List<Mmf.MmfBase>? value)
         {
             Dictionary<string, object> dic = new Dictionary<string, object>();
-            Type t = typeof(Mmf.MmfBase);
-            var props = t.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var mmf in value ?? new List<Mmf.MmfBase>())
             {
-                Dictionary<string, string> cfg = new Dictionary<string, string>();
                 dic.Add(mmf.Name, mmf);
             }
 
             return dic;
+        }
+
+        public object? ToValue(List<MmfBase>? value)
+        {
+            return null;
         }
 
         public Dictionary<string, object> ToDictionary(object value)
@@ -41,18 +48,23 @@ namespace InfoReader.Configuration.Converter
 
         public virtual List<Mmf.MmfBase>? Convert(object? value)
         {
-            var dictionaries = value as Dictionary<string, object>[];
+            dynamic? dictionaries = value as Dictionary<string, object>[];
+            dictionaries ??= value as Dictionary<string, object>;
             if (dictionaries == null)
                 return null;
-            List<Mmf.MmfBase> mmfs = new List<Mmf.MmfBase>();
             foreach (var mmfCfg in dictionaries)
             {
+
                 foreach (var dictionary in dictionaries)
                 {
-                    var name = dictionary["Name"];
-                    string type = dictionary["Type"].ToString();
+                    dynamic tmpDict = dictionary;
+                    if (dictionary is KeyValuePair<string, object> kvPair)
+                    {
+                        tmpDict = kvPair.Value;
+                    }
+                    string type = tmpDict["MmfType"].ToString();
                     IMmfFilter filter = MmfFilters.GetFilters().GetFilter(type);
-                    MmfManager.GetInstance(Plugin).Add(filter.Filter(dictionary));
+                    MmfManager.GetInstance(Plugin).Add(filter.Filter(tmpDict));
                 }
             }
             return MmfManager.GetInstance(Plugin).Mmfs.ToList();

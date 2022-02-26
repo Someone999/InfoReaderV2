@@ -73,11 +73,13 @@ namespace InfoReader.Configuration.Converter
     public interface IConfigConverter
     {
         object? Convert(object? value);
-        Dictionary<string, object> ToDictionary(object value);
+        object? ToValue(object? value);
+        Dictionary<string, object>? ToDictionary(object value);
     }
     public interface IConfigConverter<T> : IConfigConverter
     {
         new T? Convert(object? value);
-        Dictionary<string, object> ToDictionary(T value);
+        Dictionary<string, object>? ToDictionary(T value);
+        object? ToValue(T? value);
     }
 }

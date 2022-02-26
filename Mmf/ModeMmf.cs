@@ -5,6 +5,7 @@ namespace InfoReader.Mmf
 {
     public class ModeMmf: MmfBase, IModeMmf
     {
+        public override string MmfType => "ModeMmf";
         public MmfGameMode EnabledMode { get; set; }
         public ModeMmf(string name, MmfGameMode mode) : base(name)
         {
@@ -21,5 +22,7 @@ namespace InfoReader.Mmf
                 base.Update(instance);
             }
         }
+
+       
     }
 }

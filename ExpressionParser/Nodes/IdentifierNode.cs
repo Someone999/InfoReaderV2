@@ -17,8 +17,8 @@ namespace InfoReader.ExpressionParser.Nodes
         }
 
         public override ExpressionNodeType NodeType => ExpressionNodeType.Identifier;
-        bool IsNumber(object? obj) => obj is not null && double.TryParse(obj.ToString(), out _);
-        bool IsBoolean(object? obj) => obj is not null && bool.TryParse(obj.ToString(), out _);
+        private bool IsNumber(object? obj) => obj is not null && double.TryParse(obj.ToString(), out _);
+        private bool IsBoolean(object? obj) => obj is not null && bool.TryParse(obj.ToString(), out _);
 
         public ValueExpressionNode GetValue(object? rootReflectObject)
         {

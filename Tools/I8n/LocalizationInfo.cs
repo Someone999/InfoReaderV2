@@ -27,7 +27,7 @@ namespace InfoReader.Tools.I8n
             }
         }
 
-        public static LocalizationInfo GetLocalizationInfo(string cultureName, bool loadTranslations = true)
+        public static LocalizationInfo GetLocalizationInfo(string cultureName)
         {
             if (!LocalizationInfos.ContainsKey(cultureName.ToLower()))
                 LocalizationInfos.Add(cultureName.ToLower(), new LocalizationInfo(cultureName));
@@ -49,7 +49,7 @@ namespace InfoReader.Tools.I8n
             return LocalizationInfos[cultureInfo.Name.ToLower()];
         }
 
-        void TryGetTranslation(ILanguageFileOperator fileOperator, string languageId)
+        private void TryGetTranslation(ILanguageFileOperator fileOperator, string languageId)
         {
             Translations = fileOperator.ReadAll(languageId.ToLower());
             if (Translations.Count != 0) 

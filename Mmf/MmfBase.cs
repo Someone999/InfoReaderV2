@@ -11,7 +11,8 @@ namespace InfoReader.Mmf
 {
     public abstract class MmfBase: EqualityComparer<MmfBase>, IMmf
     {
-        readonly System.Timers.Timer _fileReadTimer = new System.Timers.Timer();
+        private readonly System.Timers.Timer _fileReadTimer = new System.Timers.Timer();
+        public abstract string MmfType { get; }
         public string Name { get; set; }
         [TomlIgnore]
         public System.IO.MemoryMappedFiles.MemoryMappedFile MappedFile { get; set; }
@@ -30,6 +31,7 @@ namespace InfoReader.Mmf
             }
         }
         public string FormatFile { get; set; } = "";
+        [TomlIgnore]
         public string Format { get; private set; } = "";
         protected MmfBase(string name)
         {
@@ -104,6 +106,10 @@ namespace InfoReader.Mmf
 
         private void _fileReadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            if (!File.Exists(FormatFile))
+            {
+                File.Create(FormatFile).Close();
+            }
             Format = Enabled ? File.ReadAllText(FormatFile) : string.Empty;
         }
 

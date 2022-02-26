@@ -18,6 +18,7 @@ namespace InfoReader.Configuration
         public string ConfigFilePath => DefaultFilePath.CurrentConfigFile;
         public Type ConfigElementType => typeof(TomlConfigElement);
         public string ConfigArgName => "program";
+        public IConfigElement? ConfigElement { get; set; }
         private string _langId = "en-us";
 
         [ConfigItem("Program.LanguageId", "L::LANG_CFG_LANGUAGEID")]
@@ -33,12 +34,13 @@ namespace InfoReader.Configuration
             }
         }
 
-        [Bool]
         [ConfigItem("Program.DebugMode", "L::LANG_CFG_DEBUGMODE")]
         public bool DebugMode { get; set; }
 
         [ConfigItem("Program.OsuApiKey", "L::LANG_CFG_APIKEY")] 
         public string OsuApiKey { get; set; } = "";
+        [ConfigItem("Program.OverrideFile","L::LANG_CFG_OVERRIDE_EXISTED_FILE")]
+        public bool OverrideExistedFile { get; set; }
 
         [ConfigItem("Program.BeatmapCopyDirectory", "L::LANG_CFG_BEATMAPDIR")]
         public string BeatmapCopyDirectory { get; set; } = ".\\Beatmap\\Beatmap";
@@ -59,13 +61,13 @@ namespace InfoReader.Configuration
 
         
 
-        public void Save(IConfigElement element, Dictionary<Type,object?[]>? typeConverterArgs = null)
+        public void Save(Dictionary<Type,object?[]>? typeConverterArgs = null)
         {
-            Type cfgType = typeof(MmfConfiguration);
+            Type cfgType = typeof(InfoReaderConfiguration);
             var bindingAttr = BindingFlags.Instance | BindingFlags.Public;
             foreach (var propertyInfo in ReflectionTools.GetPropertiesWithAttribute<ConfigItemAttribute>(cfgType, bindingAttr))
             {
-                IConfigElement tmp = element;
+                IConfigElement tmp = ConfigElement ?? throw new InvalidOperationException();
                 var cfgInfo = propertyInfo.Item2[0];
                 string[] parts = cfgInfo.ConfigPath.Split('.');
                 for (int i = 0; i < parts.Length - 1; i++)
@@ -73,6 +75,10 @@ namespace InfoReader.Configuration
                     tmp = tmp[parts[i]];
                 }
 
+                if (GetType() != propertyInfo.Item1.DeclaringType)
+                {
+                    return;
+                }
                 object? currentValue = propertyInfo.Item1.GetValue(this);
                 if (cfgInfo.ConverterType != null)
                 {
@@ -81,7 +87,8 @@ namespace InfoReader.Configuration
                     {
                         args = typeConverterArgs[cfgInfo.ConverterType];
                     }
-                    currentValue = (IConfigConverter?)ReflectionTools.CreateInstance(cfgInfo.ConverterType, args);
+                    var converter = (IConfigConverter?)ReflectionTools.CreateInstance(cfgInfo.ConverterType, args);
+                    currentValue = converter?.ToDictionary(currentValue) ?? converter?.ToValue(currentValue) ?? throw new ArgumentNullException();
                 }
 
                 tmp.SetValue(parts.Last(), currentValue);
@@ -90,13 +97,7 @@ namespace InfoReader.Configuration
 
         public Form CreateConfigWindow()
         {
-            Form f = new Form();
-            return f;
-        }
-
-        void AddControls(Form form)
-        {
-
+            return WindowTools.CreateDefaultConfigForm(this);
         }
     }
 }

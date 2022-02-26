@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Windows.Forms;
 using InfoReader.Command;
 using InfoReader.Command.Parser;
 using InfoReader.Configuration;
@@ -27,8 +29,6 @@ namespace InfoReader
     [SyncSoftRequirePlugin("RealTimePPDisplayerPlugin", "OsuRTDataProviderPlugin")]
     public class InfoReaderPlugin: Plugin
     {
-        private static readonly Dictionary<Type, IConfigConverter> Converters = new();
-
         internal readonly Dictionary<string, IConfigurable> Configurables = new();
         internal readonly Dictionary<string, IConfigElement> ConfigElements = new();
         internal readonly Dictionary<string, ICommandProcessor> CommandProcessors = new();
@@ -72,9 +72,8 @@ namespace InfoReader
             }
         }
 
-        private System.Timers.Timer _configUpdateTimer = new(500);
-        public InfoReaderConfiguration Configuration { get; } = new();
-        public MmfConfiguration MmfConfiguration { get; } = new();
+        public InfoReaderConfiguration Configuration { get; }
+        public MmfConfiguration MmfConfiguration { get; }
         public IMemoryDataSource? MemoryDataSource { get; private set; }
 
         public Dictionary<string, PropertyInfo> Variables { get; private set; } = new();
@@ -101,7 +100,7 @@ namespace InfoReader
             ThreadPool.QueueUserWorkItem(state => WaitingProcess());
         }
 
-        void WaitingProcess()
+        private void WaitingProcess()
         {
             Process[] processes;
             while ((processes = ProcessTools.FindProcess("osu!")).Length == 0)
@@ -117,7 +116,7 @@ namespace InfoReader
             Configuration.GameDirectory = dir;
         }
 
-        bool CommandProcessor(Arguments args)
+        internal bool CommandProcessor(Arguments args)
         {
             ICommandProcessor? processor = null;
             try
@@ -161,12 +160,12 @@ namespace InfoReader
             }
         }
 
-        void InitSyncCommand(PluginEvents.InitCommandEvent e)
+        private void InitSyncCommand(PluginEvents.InitCommandEvent e)
         {
             e.Commands.Dispatch.bind("getinfo", CommandProcessor, "None");
         }
 
-        void Loaded(PluginEvents.LoadCompleteEvent e)
+        private void Loaded(PluginEvents.LoadCompleteEvent e)
         {
             var ortdpPlugin = getHoster().EnumPluings().First(p => p.Name == "OsuRTDataProvider") as OsuRTDataProviderPlugin;
             var rtppdPlugin = getHoster().EnumPluings().First(p => p.Name == "RealTimePPDisplayer") as RealTimePPDisplayerPlugin;
@@ -175,6 +174,27 @@ namespace InfoReader
             MmfManager.GetInstance(this).StartUpdate(100);
         }
 
+        public override void OnDisable()
+        {
+            Dictionary<Type, object?[]> converterTypesArgs = new Dictionary<Type, object?[]>
+            {
+                {typeof(MmfListConverter), new object[] {this}}
+            };
+            foreach (var configurable in Configurables)
+            {
+                configurable.Value.Save(converterTypesArgs);
+            }
 
+            foreach (var configElement in ConfigElements)
+            {
+                var cfgFile = configElement.Key;
+                File.Copy(cfgFile, $"ConfigBackup\\{cfgFile}{DateTime.Now.Ticks}.bak");
+                if (configElement.Value is IConfigWriter writer)
+                {
+                    writer.WriteToFile(cfgFile);
+                }
+            }
+            
+        }
     }
 }

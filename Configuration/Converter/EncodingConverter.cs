@@ -15,13 +15,27 @@ namespace InfoReader.Configuration.Converter
             return Convert(value);
         }
 
-        public Dictionary<string, object> ToDictionary(Encoding value)
+        public object? ToValue(object? value)
         {
-            return new Dictionary<string, object>
+            if (value is Encoding encoding)
             {
-                {"MmfEncoding", value.BodyName}
-            };
+                return ToValue(encoding);
+            }
+
+            return null;
         }
+
+        public Dictionary<string, object>? ToDictionary(Encoding value)
+        {
+            return null;
+            /*return new Dictionary<string, object>
+            {
+                {"Encoding", value.BodyName}
+            };*/
+        }
+
+        public object? ToValue(Encoding? value) => value?.BodyName;
+        
 
         public Encoding? Convert(object? value)
         {
@@ -35,11 +49,11 @@ namespace InfoReader.Configuration.Converter
             }
         }
 
-        public Dictionary<string, object> ToDictionary(object value)
+        public Dictionary<string, object>? ToDictionary(object value)
         {
             if (value is Encoding encoding)
                 return ToDictionary(encoding);
-            return ToDictionary(Encoding.UTF8);
+            return null;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace InfoReader.Command
 {
     public class ConfigCommand:ICommandProcessor
     {
-        private static Dictionary<Type, (Task, Form)> _messageLoopingWindows = new Dictionary<Type, (Task, Form)>();
+        private static readonly Dictionary<Type, (Task, Form)> MessageLoopingWindows = new();
         public bool AutoCatch => true;
         public string MainCommand => "config";
         public bool OnUnhandledException(InfoReaderPlugin instance, Exception exception) => false;
@@ -28,8 +28,8 @@ namespace InfoReader.Command
             return LocalizationInfo.Current.Translations["LANG_HELP_CONFIGCOMMAND"];
         }
 
-       
-        void OpenConfig(InfoReaderPlugin instance, CommandParser parser)
+
+        private void OpenConfig(InfoReaderPlugin instance, CommandParser parser)
         {
             var args = parser.Arguments;
             if (instance.Configurables.ContainsKey(args[0]))
@@ -38,22 +38,22 @@ namespace InfoReader.Command
                 if (config is IGuiConfigurable guiConfigurable)
                 {
                     Type configType = config.GetType();
-                    if (_messageLoopingWindows.ContainsKey(configType))
+                    if (MessageLoopingWindows.ContainsKey(configType))
                     {
-                        var t = _messageLoopingWindows[configType];
+                        var t = MessageLoopingWindows[configType];
                         if (t.Item1.IsCompleted)
                         {
-                            _messageLoopingWindows.Remove(configType);
+                            MessageLoopingWindows.Remove(configType);
                             var form = guiConfigurable.CreateConfigWindow();
                             var startedTask = WindowTools.StartMessageLoop(form);
-                            _messageLoopingWindows.Add(configType, startedTask);
+                            MessageLoopingWindows.Add(configType, startedTask);
                         }
                     }
                     else
                     {
                         var form = guiConfigurable.CreateConfigWindow();
                         var startedTask = WindowTools.StartMessageLoop(form);
-                        _messageLoopingWindows.Add(configType, startedTask);
+                        MessageLoopingWindows.Add(configType, startedTask);
                     }
                 }
                 else

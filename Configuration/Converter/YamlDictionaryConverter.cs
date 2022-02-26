@@ -7,7 +7,8 @@ namespace InfoReader.Configuration.Converter;
 public class YamlDictionaryConverter : IDictionaryConverter<Dictionary<object, object?>>
 {
     public string ConfigType => "Yaml";
-    Dictionary<string, object?>[]? ListExtender(List<object> lst)
+
+    private Dictionary<string, object?>[]? ListExtender(List<object> lst)
     {
         if (lst.FirstOrDefault() is Dictionary<object, object?>)
         {

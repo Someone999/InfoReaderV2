@@ -6,7 +6,7 @@
         {
         }
         public override ExpressionNodeType NodeType => ExpressionNodeType.Null;
-        static NullNode? _nullNode;
+        private static NullNode? _nullNode;
         public static NullNode Null => _nullNode ??= new NullNode();
     }
 }

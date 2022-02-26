@@ -14,9 +14,23 @@ namespace InfoReader.Configuration.Converter
             return Convert(value);
         }
 
-        public Dictionary<string, object> ToDictionary(OrtdpWrapper.BeatmapReadMethods value)
+        public object? ToValue(object? value)
         {
-            return new Dictionary<string, object>() {{"BeatmapReadMethod", value.ToString()}};
+            if (value is OrtdpWrapper.BeatmapReadMethods method)
+            {
+                return ToValue(method);
+            }
+            return null;
+        }
+
+        public Dictionary<string, object>? ToDictionary(OrtdpWrapper.BeatmapReadMethods value)
+        {
+            return null; //new Dictionary<string, object>() {{"BeatmapReadMethod", value.ToString()}};
+        }
+
+        public object? ToValue(OrtdpWrapper.BeatmapReadMethods value)
+        {
+            return value.ToString();
         }
 
         public OrtdpWrapper.BeatmapReadMethods Convert(object? value)
@@ -29,9 +43,9 @@ namespace InfoReader.Configuration.Converter
             throw new ArgumentException();
         }
 
-        public Dictionary<string, object> ToDictionary(object value)
+        public Dictionary<string, object>? ToDictionary(object value)
         {
-            return ToDictionary((OrtdpWrapper.BeatmapReadMethods) value);
+            return null; //ToDictionary((OrtdpWrapper.BeatmapReadMethods) value);
         }
     }
 }

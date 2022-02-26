@@ -11,8 +11,8 @@ public class StatusModeMmfFilter : IMmfFilter
     public MmfBase Filter(Dictionary<string, object> config)
     {
         string name = config["Name"].ToString();
-        StatusModeMmf mmf = new StatusModeMmf(name, ModeMmfFilter.MulGameModeProcessor(config["Mode"].ToString()),
-            StatusMmfFilter.StatusProcessor(config["Status"].ToString()))
+        StatusModeMmf mmf = new StatusModeMmf(name, ModeMmfFilter.MulGameModeProcessor(config["EnabledMode"].ToString()),
+            StatusMmfFilter.StatusProcessor(config["EnabledStatus"].ToString()))
         {
             FormatFile = config["FormatFile"].ToString(),
             Enabled = bool.Parse(config["Enabled"].ToString())

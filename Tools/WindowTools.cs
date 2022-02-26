@@ -17,7 +17,7 @@ namespace InfoReader.Tools
 {
     public static class WindowTools
     {
-        public static (Task,Form) StartMessageLoop(Form form)
+        public static (Task, Form) StartMessageLoop(Form form)
         {
             return (Task.Run(() => Application.Run(form)),form);
         }
@@ -45,13 +45,13 @@ namespace InfoReader.Tools
         {
             var configItemAttr = info.Item2[0];
             string displayName = configItemAttr.DisplayName ?? info.Item1.Name;
-            if (typeAttr is BoolAttribute)
+            if (info.Item1.PropertyType == typeof(bool))
             {
                 CheckBox checkBox = new CheckBox();
                 checkBox.Text = displayName;
                 checkBox.Font = FontTools.MicrosoftYaHei;
                 checkBox.Checked = (bool)info.Item1.GetValue(ins);
-                checkBox.CheckStateChanged += (sender, args) =>
+                checkBox.CheckStateChanged += (_, _) =>
                 {
                     try
                     {
@@ -76,6 +76,7 @@ namespace InfoReader.Tools
                 comboBox.SelectedItem = lst.DefaultSelection;
                 comboBox.Width = 100;
                 comboBox.Font = FontTools.MicrosoftYaHei;
+                comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
                 return (l, comboBox);
             }
 
@@ -90,7 +91,7 @@ namespace InfoReader.Tools
                 t.Left = l.Width + l.Left + 100;
                 t.Font = FontTools.MicrosoftYaHei;
                 t.Text = info.Item1.GetValue(ins).ToString();
-                t.TextChanged += (sender, args) =>
+                t.TextChanged += (_, _) =>
                 {
                     try
                     {
@@ -107,8 +108,7 @@ namespace InfoReader.Tools
                             IConfigConverter? converter = (IConfigConverter?)
                                 ReflectionTools.CreateInstance(converterType, converterArgs);
                             val = converter?.Convert(val) ?? throw new InvalidCastException();
-                        }
-                        info.Item1.SetValue(ins, val);
+                        } info.Item1.SetValue(ins, val);
                     }
                     catch (Exception e)
                     {
@@ -176,7 +176,7 @@ namespace InfoReader.Tools
                     Label? lb = controlTuple.Item1 as Label;
                     if (f.Controls.Count > 0)
                     {
-                        controlTuple.Item2.Top = lb?.Top ?? LastOf<Control>(f.Controls).Top + controlTuple.Item2.Height;
+                        controlTuple.Item2.Top = lb?.Top ?? LastOf<Control>(f.Controls).Top + controlTuple.Item2.Height + 15;
                         controlTuple.Item2.Left = lb?.Left + lb?.Width + 20 ?? controlTuple.Item2.Left;
                         controlTuple.Item2.Width = 200;
                     }
@@ -190,15 +190,18 @@ namespace InfoReader.Tools
             f.Width = widths.Max() + 50;
             f.AutoSize = true;
             f.Height = widths.Max() + 50;
-            f.Controls.Add(new Button
+            var saveBtn = new Button
             {
                 Text = LocalizationInfo.Current.Translations["LANG_UI_BTN_SAVE"],
-                Width = 100, 
-                Height = 60, 
-                Top = lastControl.Top + 50, 
+                Width = 100,
+                Height = 60,
+                Top = lastControl.Top + 50,
                 Left = f.Width - 150,
                 Font = FontTools.MicrosoftYaHei
-        });
+            };
+            saveBtn.Click += (_, _) => configurable.Save();
+            f.Controls.Add(saveBtn);
+
             return f;
         }
     }

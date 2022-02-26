@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using InfoReader.Command.Parser;
 using InfoReader.Tools;
@@ -23,7 +24,7 @@ namespace InfoReader.Command
             return LocalizationInfo.Current.Translations["LANG_HELP_FILEGETTER"];
         }
 
-        void InitDirectory(InfoReaderPlugin instance)
+        private void InitDirectory(InfoReaderPlugin instance)
         {
             if (!Directory.Exists(instance.Configuration.AudioCopyDirectory))
             {
@@ -52,7 +53,7 @@ namespace InfoReader.Command
             }
 
             var fileType = args[0];
-            string fileName = "", oriFileName = "";
+            string fileName, oriFileName;
             var beatmap = instance.MemoryDataSource?.Beatmap;
             if (beatmap == null)
             {
@@ -68,25 +69,24 @@ namespace InfoReader.Command
                         return true;
                     }
                     oriFileName = beatmap.FullVideoFileName;
-                    fileName = PathTools.GetBeatmapFileName
+                    fileName = PathTools.GetFileName
                         (instance.Configuration.VideoCopyDirectory, beatmap, Path.GetExtension(beatmap.VideoFileName));
                     break;
                 case "audio":
                     oriFileName = beatmap.FullAudioFileName;
-                    fileName = PathTools.GetBeatmapFileName
+                    fileName = PathTools.GetFileName
                         (instance.Configuration.AudioCopyDirectory, beatmap, Path.GetExtension(beatmap.AudioFileName));
                     break;
                 case "bg":
                     oriFileName = beatmap.FullBackgroundFileName;
-                    fileName = PathTools.GetBeatmapFileName
+                    fileName = PathTools.GetFileName
                         (instance.Configuration.BackgroundCopyDirectory, beatmap, Path.GetExtension(beatmap.VideoFileName));
                     break;
                 case "osz":
                     OsuInfo info = new();
-                    fileName = PathTools.GetBeatmapFileName(instance.Configuration.BeatmapCopyDirectory, beatmap,
+                    fileName = PathTools.GetFileName(instance.Configuration.BeatmapCopyDirectory, beatmap,
                         "osz");
-                    string des = Path.Combine(instance.Configuration.BeatmapCopyDirectory,
-                        $"{beatmap.BeatmapSetId} {beatmap.Artist}-{beatmap.Title}.osz");
+                    string des = Path.Combine(instance.Configuration.BeatmapCopyDirectory, fileName);
                     ZipFile.CreateFromDirectory
                         (Path.Combine(info.BeatmapDirectory, beatmap.BeatmapFolder), des);
                     Logger.Log(LocalizationInfo.Current.Translations["LANG_INFO_COMPRESSED"]);
@@ -98,6 +98,12 @@ namespace InfoReader.Command
 
             try
             {
+                if (File.Exists(fileName))
+                {
+                    bool endsWithDashNumber = PathTools.FileNumberMatcher.IsMatch(fileName);
+                    int id = PathTools.GetFileNumber(fileName, endsWithDashNumber);
+                    fileName = PathTools.AddNumber(fileName, 0);
+                }
                 File.Copy(oriFileName, fileName);
                 Logger.Log(LocalizationInfo.Current.Translations["LANG_INFO_COPYSUCCESS"]);
             }

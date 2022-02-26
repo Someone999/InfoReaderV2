@@ -15,8 +15,7 @@ namespace InfoReader.Mmf.Filters
             Type[] types = ReflectionTools.GetTypesWithInterface<IMmfFilter>(Assembly.GetExecutingAssembly());
             foreach (var type in types)
             {
-                IMmfFilter? filter = ReflectionTools.CreateInstance(type, Array.Empty<object>()) as IMmfFilter;
-                if (filter == null)
+                if (ReflectionTools.CreateInstance(type, Array.Empty<object>()) is not IMmfFilter filter)
                     continue;
                 _filtersList.Add(filter.MmfType, filter);
             }

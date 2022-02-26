@@ -113,6 +113,7 @@ namespace InfoReader.Tools
 
                 property.Item1.SetValue(configurable, cfgVal);
             }
+            configurable.ConfigElement = element;
         }
     }
 }
