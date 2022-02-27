@@ -9,6 +9,10 @@ namespace InfoReader.Version
 {
     public class PluginVersion
     {
+        /// <summary>
+        /// This value will be returned when query or parse failed.
+        /// </summary>
+        public static PluginVersion InvalidVersion { get; } = new(0, 0, -1);
         protected bool Equals(PluginVersion other)
         {
             return Major == other.Major && Minor == other.Minor && Addition == other.Addition;
@@ -18,8 +22,7 @@ namespace InfoReader.Version
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((PluginVersion) obj);
+            return obj.GetType() == GetType() && Equals((PluginVersion) obj);
         }
 
         public override int GetHashCode()
@@ -40,12 +43,12 @@ namespace InfoReader.Version
             Addition = addition;
         }
 
-        public static PluginVersion? Parse(string version)
+        public static PluginVersion Parse(string version)
         {
             string[] parts = version.Split('.');
             if (parts.Length != 3)
             {
-                return null;
+                return InvalidVersion;
             }
             int[] parsed = (from part in parts select int.Parse(part)).ToArray();
             return new PluginVersion(parsed[0], parsed[1], parsed[2]);
@@ -56,14 +59,37 @@ namespace InfoReader.Version
             return a.Major == b.Major && a.Minor == b.Minor && a.Addition == b.Addition;
         }
 
+        int ToConvertible()
+        {
+            return Major * 100 + Minor * 10 + Addition;
+        }
         public static bool operator !=(PluginVersion a, PluginVersion b)
         {
             return !(a == b);
         }
 
-        public int Major { get; set; }
-        public int Minor { get; set; }
-        public int Addition { get; set; }
+        public static bool operator >(PluginVersion a, PluginVersion b)
+        {
+            return a.ToConvertible() > b.ToConvertible();
+        }
+
+        public static bool operator <(PluginVersion a, PluginVersion b)
+        {
+            return a.ToConvertible() < b.ToConvertible();
+        }
+        public static bool operator >=(PluginVersion a, PluginVersion b)
+        {
+            return a > b || a == b;
+        }
+
+        public static bool operator <=(PluginVersion a, PluginVersion b)
+        {
+            return a < b || a == b;
+        }
+
+        public int Major { get; }
+        public int Minor { get;}
+        public int Addition { get; }
         public override string ToString() => $"{Major}.{Minor}.{Addition}";
 
         public PluginFile[] GetPluginFiles() => InfoReaderUpdateTools.GetUpdateFiles(ToString());

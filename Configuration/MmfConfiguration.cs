@@ -37,7 +37,7 @@ namespace InfoReader.Configuration
             {
                 typeConverterArgs ??= new Dictionary<Type, object?[]>()
                 {
-                    {typeof(MmfListConverter), new object[] {null}}
+                    {typeof(MmfListConverter), new object?[] {null}}
                 };
                 IConfigElement tmp = ConfigElement ?? throw new InvalidOperationException();
                 var cfgInfo = propertyInfo.Item2[0];
@@ -53,11 +53,11 @@ namespace InfoReader.Configuration
 
                 object? currentValue = propertyInfo.Item1.GetValue(this);
                 object?[] args = Array.Empty<object>();
-                if (typeConverterArgs.ContainsKey(cfgInfo.ConverterType))
+                if (cfgInfo.ConverterType != null && typeConverterArgs.ContainsKey(cfgInfo.ConverterType))
                 {
                     args = typeConverterArgs[cfgInfo.ConverterType];
                 }
-                var converter = (IConfigConverter?) ReflectionTools.CreateInstance(cfgInfo.ConverterType, args);
+                var converter = (IConfigConverter?) ReflectionTools.CreateInstance(cfgInfo.ConverterType ?? throw new InvalidOperationException(), args);
                 currentValue = converter?.ToDictionary(currentValue) ?? converter?.ToValue(currentValue) ?? throw new ArgumentNullException();
                 tmp.SetValue(parts.Last(), currentValue);
             }

@@ -101,6 +101,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\InfoReaderVersionAttribute.cs" />
     <Compile Include="Command\ConfigCommand.cs" />
     <Compile Include="Command\GetFileCommand.cs" />
     <Compile Include="Command\GetVarCommand.cs" />
@@ -166,8 +167,11 @@
     <Compile Include="Configuration\Elements\YamlConfigElement.cs" />
     <Compile Include="Tools\ConfigTools.cs" />
     <Compile Include="Tools\DefaultFilePath.cs" />
+    <Compile Include="Tools\Downloader\HttpClientDownloader.cs" />
+    <Compile Include="Tools\Downloader\IDownloader.cs" />
     <Compile Include="Tools\FontTools.cs" />
     <Compile Include="Tools\GameModeTools.cs" />
+    <Compile Include="Tools\MigrationAssistant.cs" />
     <Compile Include="Tools\PathTools.cs" />
     <Compile Include="Tools\I8n\ILanguageFileOperator.cs" />
     <Compile Include="Tools\I8n\ILocalizationInfo.cs" />
@@ -184,6 +188,7 @@
     <Compile Include="Tools\Win32\NativeApi.cs" />
     <Compile Include="Tools\WindowTools.cs" />
     <Compile Include="Update\AvailabilityStatus.cs" />
+    <Compile Include="Tools\Downloader\HttpWebRequestDownloader.cs" />
     <Compile Include="Update\InfoReaderUpdateTools.cs" />
     <Compile Include="Update\InfoReadUrl.cs" />
     <Compile Include="Update\PluginAvailabilityInfo.cs" />

@@ -130,12 +130,12 @@ namespace InfoReader.ExpressionParser.Nodes
 
         private BoolExpressionNode LessOrEquals(NumberExpressionNode a, NumberExpressionNode b)
         {
-            return new BoolExpressionNode((double)a.Value <= (double)b.Value);
+            return new BoolExpressionNode((double)a.Value! <= (double)b.Value!);
         }
 
         private BoolExpressionNode Not(BoolExpressionNode right)
         {
-            return new BoolExpressionNode(!(bool)right.Value);
+            return new BoolExpressionNode(!(bool)right.Value!);
         }
     }
 

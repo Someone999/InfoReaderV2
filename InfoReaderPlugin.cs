@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using InfoReader.Attributes;
 using InfoReader.Command;
 using InfoReader.Command.Parser;
 using InfoReader.Configuration;
@@ -16,6 +17,7 @@ using InfoReader.Configuration.Elements;
 using InfoReader.Mmf;
 using InfoReader.Tools;
 using InfoReader.Tools.I8n;
+using InfoReader.Version;
 using OsuRTDataProvider;
 using osuTools;
 using osuTools.OrtdpWrapper;
@@ -26,6 +28,7 @@ using Logger = InfoReader.Tools.Logger;
 
 namespace InfoReader
 {
+    [InfoReaderVersion("1.0.21")]
     [SyncSoftRequirePlugin("RealTimePPDisplayerPlugin", "OsuRTDataProviderPlugin")]
     public class InfoReaderPlugin: Plugin
     {
@@ -33,6 +36,12 @@ namespace InfoReader
         internal readonly Dictionary<string, IConfigElement> ConfigElements = new();
         internal readonly Dictionary<string, ICommandProcessor> CommandProcessors = new();
 
+        public PluginVersion? GetCurrentVersion()
+        {
+            Type type = typeof(InfoReaderPlugin);
+            var attrs = type.GetCustomAttributes<InfoReaderVersionAttribute>();
+            return attrs.ElementAt(0).PluginVersion;
+        }
         
 
         internal void InitCommand(Dictionary<Type,object[]>? commandTypeArgs = null)
