@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using InfoReader.Configuration.Attributes;
 using InfoReader.Configuration.Converter;
@@ -15,11 +17,17 @@ namespace InfoReader.Configuration
 {
     public class InfoReaderConfiguration : IGuiConfigurable
     {
+        public InfoReaderConfiguration(InfoReaderPlugin plugin)
+        {
+            _plugin = plugin;
+        }
+
         public string ConfigFilePath => DefaultFilePath.CurrentConfigFile;
         public Type ConfigElementType => typeof(TomlConfigElement);
-        public string ConfigArgName => "program";
+        public string ConfigName => "program";
         public IConfigElement? ConfigElement { get; set; }
         private string _langId = "en-us";
+        private InfoReaderPlugin _plugin;
 
         [ConfigItem("Program.LanguageId", "L::LANG_CFG_LANGUAGEID")]
         public string LanguageId
@@ -35,7 +43,39 @@ namespace InfoReader.Configuration
         }
 
         [ConfigItem("Program.DebugMode", "L::LANG_CFG_DEBUGMODE")]
-        public bool DebugMode { get; set; }
+        public bool DebugMode
+        {
+            get
+            {
+                while (_plugin.MemoryDataSource is null)
+                {
+                    Thread.Sleep(1);
+                }
+                Thread.Sleep(10);
+                var wrapper = (OrtdpWrapper)_plugin.MemoryDataSource;
+                lock (wrapper)
+                {
+                    return wrapper.DebugMode;
+                }
+            }
+            set
+            {
+                Task.Run(() =>
+                {
+                    while (_plugin.MemoryDataSource is null)
+                    {
+                        Thread.Sleep(1);
+                    }
+                    
+                    var wrapper = (OrtdpWrapper) _plugin.MemoryDataSource;
+                    lock (wrapper)
+                    {
+                        wrapper.DebugMode = value;
+                    }
+
+                });
+            }
+        }
 
         [ConfigItem("Program.OsuApiKey", "L::LANG_CFG_APIKEY")] 
         public string OsuApiKey { get; set; } = "";
@@ -54,12 +94,47 @@ namespace InfoReader.Configuration
         [ConfigItem("Program.VideoCopyDirectory", "L::LANG_CFG_VIDEODIR")]
         public string VideoCopyDirectory { get; set; } = ".\\Beatmap\\Video";
         [ConfigItem("Program.GamePath", "L::LANG_CFG_GAMEDIR")]
-        public string GameDirectory { get; set; } = "";
-        [List("OsuDb","OsuDb", "Ortdp")]
-        [ConfigItem("Program.BeatmapReadMethod", "L::LANG_CFG_READMETHOD", typeof(BeatmapReadMethodsConverter))]
-        public OrtdpWrapper.BeatmapReadMethods ReadMethod { get; set; }
+        public string GamePath { get; set; } = "";
 
-        
+        [List("OsuDb", "OsuDb", "Ortdp")]
+        [ConfigItem("Program.BeatmapReadMethod", "L::LANG_CFG_READMETHOD", typeof(BeatmapReadMethodsConverter))]
+        public OrtdpWrapper.BeatmapReadMethods ReadMethod
+        {
+            get
+            {
+                while (_plugin.MemoryDataSource is null)
+                {
+                    Thread.Sleep(1);
+                }
+                Thread.Sleep(10);
+                var wrapper = (OrtdpWrapper)_plugin.MemoryDataSource;
+                lock (wrapper)
+                {
+                    return wrapper.BeatmapReadMethod;
+                }
+            }
+            set
+            {
+
+                Task.Run(() =>
+                {
+                    while (_plugin.MemoryDataSource is null)
+                    {
+                        Thread.Sleep(1);
+                    }
+
+                    var wrapper = (OrtdpWrapper) _plugin.MemoryDataSource;
+                    lock (wrapper)
+                    {
+                        wrapper.BeatmapReadMethod = value;
+                    }
+                    
+                });
+            }
+        }
+
+        [ConfigItem("Program.AutoUpdate", "L::LANG_CFG_AUTOUPDATE")]
+        public bool AutoUpdate { get; set; } = true;
 
         public void Save(Dictionary<Type,object?[]>? typeConverterArgs = null)
         {

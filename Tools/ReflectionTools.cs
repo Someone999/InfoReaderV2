@@ -7,6 +7,22 @@ namespace InfoReader.Tools
 {
     public static class ReflectionTools
     {
+        public static bool HasInterface(Type type,Type interfaceType)
+        {
+            return type.GetInterface(interfaceType.FullName) == null;
+        }
+       
+        public static bool HasInterface<TType,TInterface>()
+        {
+            Type type = typeof(TType), interfaceType = typeof(TInterface);
+            return type.GetInterface(interfaceType.FullName) == null;
+        }
+
+        public static bool HasInterface<TInterface>(Type type)
+        {
+            Type interfaceType = typeof(TInterface);       //==
+            return type.GetInterface(interfaceType.FullName) != null;
+        }
         public static Type?[] GetParameterTypes(object?[] parameters)
         {
             return parameters.Select(parameter => parameter?.GetType()).Where(t => t != null).ToArray();
@@ -34,6 +50,11 @@ namespace InfoReader.Tools
                             throw new AmbiguousMatchException($"Two or more constructors have {paraCount} parameters.");
                         }
                     }
+                }
+
+                if (matchedConstructors.Count == 0)
+                {
+                    return null;
                 }
                 constructor = matchedConstructors[0];
             }

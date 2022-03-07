@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Sync.Tools;
-using Logger = InfoReader.Tools.Logger;
 
 namespace InfoReader.Configuration.Converter
 {

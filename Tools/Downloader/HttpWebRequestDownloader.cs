@@ -39,11 +39,18 @@ public class HttpWebRequestDownloader : IDownloader
                 //client.Timeout = TimeSpan.FromMilliseconds(Timeout);
                 request.Timeout = Timeout;
             }
+
             var response = request.GetResponse();
             Stream? s = response.GetResponseStream();
             long total = response.ContentLength;
 
             byte[] buffer = new byte[BufferSize];
+            string? directory = Path.GetDirectoryName(path);
+            if (directory != null && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             FileStream fstream = File.Create(path);
             created = fstream;
             int readLen = 0, downloadedLen = 0;
@@ -52,16 +59,20 @@ public class HttpWebRequestDownloader : IDownloader
                 readLen = s?.Read(buffer, 0, BufferSize) ?? throw new InvalidOperationException();
                 fstream.Write(buffer, 0, readLen);
                 downloadedLen += readLen;
-                OnDownloadProgressChanged?.Invoke((double)downloadedLen / total);
+                OnDownloadProgressChanged?.Invoke((double) downloadedLen / total);
             } while (readLen != 0);
+
             return true;
         }
         catch (Exception e)
         {
             exception = e;
-            created?.Close();
             request.Abort();
             return false;
+        }
+        finally
+        {
+            created?.Close();
         }
     }
 

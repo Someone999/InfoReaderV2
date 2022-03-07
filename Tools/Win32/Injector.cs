@@ -9,7 +9,12 @@ public class Injector:IInjector
     private IntPtr GetLoadLibrary()
     {
         IntPtr hKernel32 = NativeApi.GetModuleHandle("kernel32");
-        return NativeApi.GetProcAddress(hKernel32, "LoadLibraryW");
+        if (hKernel32 == IntPtr.Zero)
+        {
+            Logger.LogError($"[GetModuleHandle] Failed. Error code: {Marshal.GetLastWin32Error()}");
+            return IntPtr.Zero;
+        }
+        return NativeApi.GetProcAddress(hKernel32, "LoadLibraryA");
     }
 
     private (IntPtr,int) WriteDllPath(IntPtr hProcess, string modulePath)
@@ -28,8 +33,9 @@ public class Injector:IInjector
             
         int realLen = 0;
         bool suc = NativeApi.WriteProcessMemory(hProcess, remote, path, bts.Length, ref realLen);
-        if (suc && realLen == bts.Length)
-            return (path,bts.Length);
+        if (suc && realLen == bts.Length) 
+            //return (path, bts.Length);
+            return (remote, bts.Length);
         Logger.LogError($"[WriteProcessMemory] Failed. Error code: {Marshal.GetLastWin32Error()}");
         return (IntPtr.Zero,0);
 
@@ -46,10 +52,17 @@ public class Injector:IInjector
         var remoteBuffer = WriteDllPath(process, modulePath);
         if (remoteBuffer.Item1 == IntPtr.Zero)
         {
+            Logger.LogError($"[VirtualAllocEx] Failed. Error code: {Marshal.GetLastWin32Error()}");
             return false;
         }
 
-        IntPtr hThread = NativeApi.CreateRemoteThread(process, IntPtr.Zero, 0, GetLoadLibrary(), remoteBuffer.Item1,
+        IntPtr loadLibFunc = GetLoadLibrary();
+        if (loadLibFunc == IntPtr.Zero)
+        {
+            Logger.LogError($"[GetProcAddress] Failed. Error code: {Marshal.GetLastWin32Error()}");
+            return false;
+        }
+        IntPtr hThread = NativeApi.CreateRemoteThread(process, IntPtr.Zero, 0, loadLibFunc, remoteBuffer.Item1,
             0,
             IntPtr.Zero);
         if (hThread == IntPtr.Zero) 

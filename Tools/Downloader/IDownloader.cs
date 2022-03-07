@@ -1,10 +1,4 @@
-﻿using InfoReader.Tools.Downloader;
-
-namespace InfoReader.Tools.Downloader
-{
-}
-
-namespace InfoReader.Tools
+﻿namespace InfoReader.Tools.Downloader
 {
     public interface IDownloader
     {

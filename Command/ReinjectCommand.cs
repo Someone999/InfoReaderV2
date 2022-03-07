@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Threading;
 using InfoReader.Command.Parser;
 using InfoReader.Tools;
 using InfoReader.Tools.I8n;
@@ -27,12 +24,13 @@ namespace InfoReader.Command
             var processes = ProcessTools.FindProcess("osu!");
             if (processes.Length == 0)
             {
-                if (string.IsNullOrEmpty(instance.Configuration.GameDirectory))
+                if (string.IsNullOrEmpty(instance.Configuration.GamePath))
                 {
                     Logger.LogError(LocalizationInfo.Current.Translations["LANG_ERR_NOPROCESS"]);
                     return true;
                 }
-                OpenCommand.Open(instance.Configuration.GameDirectory);
+                OpenCommand.Open(instance.Configuration.GamePath);
+                Thread.Sleep(3000);
             }
 
             if (ProcessTools.ContainsModule(processes[0], "Overlay.dll"))
@@ -42,7 +40,22 @@ namespace InfoReader.Command
             }
             IInjector injector = new Injector();
             var osu = processes[0];
-            var path = $"{Environment.CurrentDirectory}\\..\\overlay.dll";
+            var related = instance.Configurables["program"]?.ConfigElement?["Program"]["OverlayDllPath"]
+                .GetValue<string>() ?? throw new InvalidOperationException();
+            var path = Path.GetFullPath(related);
+            if (!File.Exists(path))
+            {
+                string? directory = Path.GetDirectoryName(path);
+                if (directory == null)
+                    throw new InvalidOperationException();
+                string fileName = Path.GetFileName(path);
+                if(fileName == null)
+                    throw new InvalidOperationException();
+                directory = Path.GetFullPath(Path.Combine(directory, ".."));
+                path = Path.Combine(directory, fileName);
+            }
+
+            instance.Configurables["program"]?.ConfigElement?["Program"].SetValue("OverlayDllPath", path);
             if (!injector.Inject(osu.Id, path))
             {
                 injector = new CppInjector();

@@ -2,18 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using InfoReader.Command;
-using InfoReader.Command.Parser;
 using InfoReader.Configuration;
 using InfoReader.Configuration.Attributes;
 using InfoReader.Configuration.Converter;
 using InfoReader.Configuration.Elements;
-using InfoReader.Configuration.Gui;
 using InfoReader.Mmf;
-using InfoReader.Tools.I8n;
 
 namespace InfoReader.Tools
 {

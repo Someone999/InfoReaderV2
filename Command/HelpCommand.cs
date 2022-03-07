@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using InfoReader.Command.Parser;
 using InfoReader.Tools;
 using InfoReader.Tools.I8n;

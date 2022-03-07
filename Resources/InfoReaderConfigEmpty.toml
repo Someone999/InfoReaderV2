@@ -1,0 +1,23 @@
+[Program]
+LanguageId = ""
+DebugMode = false
+OsuApiKey = ""
+BeatmapCopyDirectory = ""
+AudioCopyDirectory = ""
+VideoCopyDirectory = ""
+BackgroundCopyDirectory = ""
+BeatmapReadMethod = "OsuDb"
+GamePath = ""
+OverrideFile = false
+OverlayDllPath = ""
+AutoUpdate = false
+
+
+[MmfConfigs]
+
+#You'd better don't change Encoding.
+Encoding = ""
+Mmfs = []
+
+[Migration]
+IsMigrated = false

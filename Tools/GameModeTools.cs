@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using InfoReader.Mmf;
+﻿using InfoReader.Mmf;
 using osuTools.Game.Modes;
 
 namespace InfoReader.Tools

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using osuTools.Attributes;
 
 namespace InfoReader.Tools
@@ -33,6 +30,8 @@ namespace InfoReader.Tools
                 foreach (var attr in prop.Item2)
                 {
                     availableVariables.AddNotExist(prop.Item1.Name, prop.Item1);
+                    //漏了下面一行
+                    availableVariables.AddNotExist(attr.VariableName, prop.Item1);
                     if (!attr.HasAlias)
                     {
                         continue;

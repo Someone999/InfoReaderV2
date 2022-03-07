@@ -89,7 +89,7 @@ namespace InfoReader.Configuration.Elements
         {
             get
             {
-                var dict = _innerVal as Dictionary<string, string> ?? throw new ArgumentException(); ;
+                var dict = _innerVal as Dictionary<string, object?> ?? throw new ArgumentException(); ;
                 return new IniConfigElement(dict[key]);
             }
         }

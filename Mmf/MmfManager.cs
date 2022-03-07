@@ -91,7 +91,11 @@ namespace InfoReader.Mmf
         {
             foreach (var mmfBase in _updatingMmfs)
             {
-                Task.Run(() => UpdateMmf(mmfBase.Value.Item1, mmfBase.Value.Item2.Token));
+                Task.Run(() =>
+                {
+                    Thread.CurrentThread.Name = $"Mmf {mmfBase.Key} update thread";
+                    UpdateMmf(mmfBase.Value.Item1, mmfBase.Value.Item2.Token);
+                });
             }
         }
 

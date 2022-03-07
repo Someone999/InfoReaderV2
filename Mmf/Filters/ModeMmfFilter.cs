@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using osuTools.Game.Modes;
 
 namespace InfoReader.Mmf.Filters;
 

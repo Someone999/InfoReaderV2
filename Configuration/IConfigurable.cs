@@ -8,7 +8,7 @@ namespace InfoReader.Configuration
     {
         Type ConfigElementType { get; }
         string ConfigFilePath { get; }
-        string ConfigArgName { get; }
+        string ConfigName { get; }
         IConfigElement? ConfigElement { get; set; }
         void Save(Dictionary<Type,object?[]>? typeConverterArgs = null);
     }

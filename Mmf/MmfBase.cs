@@ -5,7 +5,6 @@ using InfoReader.ExpressionMatcher;
 using InfoReader.ExpressionParser.Tools;
 using InfoReader.Tools.I8n;
 using Nett;
-using YamlDotNet.Serialization;
 
 namespace InfoReader.Mmf
 {
@@ -19,7 +18,7 @@ namespace InfoReader.Mmf
         [TomlIgnore]
         public Stream MappedFileStream => MappedFile.CreateViewStream();
         public event EnabledStateChangedEventHandler? OnEnabledStateChanged;
-        public int UpdateInterval { get; set; } = 100;
+        public int UpdateInterval { get; set; } = 5;
         protected bool InternalEnabled;
         public bool Enabled
         {
@@ -120,18 +119,35 @@ namespace InfoReader.Mmf
             StringBuilder innerFormat = new StringBuilder(Format);
             foreach (var val in vals)
             {
-                string[] parts = val.Split(':');
+                string tmpVal = val;
+                if (tmpVal.StartsWith("${"))
+                {
+                    tmpVal = val.Substring(2);
+                }
+
+                if (tmpVal.EndsWith("}"))
+                {
+                    //tmpVal = val.Substring(0,tmpVal.Length - 1);
+                    tmpVal = tmpVal.Substring(0, tmpVal.Length - 1);
+                }
+                string[] parts = tmpVal.Split(':');
                 string format = "";
                 if (parts.Length > 1)
                 {
                     format = parts[1];
                 }
+
+
+                parts[0] = instance.LowerCasedVariables[parts[0].ToLower()].Name;
                 
-                var rslt = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(parts[0].Trim('$','{','}')), instance.MemoryDataSource);
+                var rslt = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(parts[0]), instance.MemoryDataSource);
+                //var rslt = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(parts[0].Trim('$','{','}')), instance.MemoryDataSource);
                 innerFormat.Replace(val, rslt.ToString(format,LocalizationInfo.Current.Culture));
             }
 
-            byte[] bts = Encoding.UTF8.GetBytes(innerFormat.ToString());
+            innerFormat.Append('\0', 4);
+            string formatted = innerFormat.ToString();
+            byte[] bts = Encoding.UTF8.GetBytes(formatted);
             MappedFileStream.Write(bts, 0, bts.Length);
         }
     }

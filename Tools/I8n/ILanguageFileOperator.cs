@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace InfoReader.Tools.I8n
+﻿namespace InfoReader.Tools.I8n
 {
     public interface ILanguageFileOperator
     {

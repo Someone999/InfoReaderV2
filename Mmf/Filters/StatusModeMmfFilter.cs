@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using osuTools.Game;
-using osuTools.Game.Modes;
+﻿using System.Collections.Generic;
 
 namespace InfoReader.Mmf.Filters;
 

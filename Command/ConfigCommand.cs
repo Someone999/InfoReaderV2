@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using InfoReader.Command.Parser;
 using InfoReader.Configuration;
-using InfoReader.Configuration.Converter;
-using InfoReader.Configuration.Elements;
 using InfoReader.Configuration.Gui;
 using InfoReader.Configuration.Serializer;
 using InfoReader.Mmf;
@@ -17,7 +14,7 @@ namespace InfoReader.Command
 {
     public class ConfigCommand:ICommandProcessor
     {
-        private static readonly Dictionary<Type, (Task, Form)> MessageLoopingWindows = new();
+        private static readonly Dictionary<Type, (Thread, Form)> MessageLoopingWindows = new();
         public bool AutoCatch => true;
         public string MainCommand => "config";
         public bool OnUnhandledException(InfoReaderPlugin instance, Exception exception) => false;
@@ -41,19 +38,18 @@ namespace InfoReader.Command
                     if (MessageLoopingWindows.ContainsKey(configType))
                     {
                         var t = MessageLoopingWindows[configType];
-                        if (t.Item1.IsCompleted)
-                        {
-                            MessageLoopingWindows.Remove(configType);
-                            var form = guiConfigurable.CreateConfigWindow();
-                            var startedTask = WindowTools.StartMessageLoop(form);
-                            MessageLoopingWindows.Add(configType, startedTask);
-                        }
+                        if (t.Item1.IsAlive) 
+                            return;
+                        MessageLoopingWindows.Remove(configType);
+                        var form = guiConfigurable.CreateConfigWindow();
+                        var startedThread = WindowTools.StartMessageLoop(form);
+                        MessageLoopingWindows.Add(configType, startedThread);
                     }
                     else
                     {
                         var form = guiConfigurable.CreateConfigWindow();
-                        var startedTask = WindowTools.StartMessageLoop(form);
-                        MessageLoopingWindows.Add(configType, startedTask);
+                        var startedThread = WindowTools.StartMessageLoop(form);
+                        MessageLoopingWindows.Add(configType, startedThread);
                     }
                 }
                 else

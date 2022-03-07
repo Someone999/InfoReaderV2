@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,7 +12,6 @@ using InfoReader.Mmf;
 using InfoReader.Tools;
 using InfoReader.Tools.I8n;
 using InfoReader.Window;
-using Nett;
 
 namespace InfoReader.Configuration
 {
@@ -22,11 +20,11 @@ namespace InfoReader.Configuration
         
         public string ConfigFilePath => DefaultFilePath.CurrentConfigFile;
         public Type ConfigElementType => typeof(TomlConfigElement);
-        public string ConfigArgName => "mmf";
+        public string ConfigName => "mmf";
         public IConfigElement? ConfigElement { get; set; }
 
         [ConfigItem("MmfConfigs.Mmfs",converterType: typeof(MmfListConverter))]
-        public List<MmfBase> MmfList { get; set; } = new();
+        public List<MmfBase>? MmfList { get; set; } = new();
         [ConfigItem("MmfConfigs.Encoding", "L::LANG_CFG_MMFENCODING",typeof(EncodingConverter))]
         public Encoding MmfEncoding { get; set; } = Encoding.UTF8;
         public void Save(Dictionary<Type,object?[]>? typeConverterArgs = null)

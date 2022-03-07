@@ -21,7 +21,7 @@ namespace InfoReader.Tools
             Sync.Tools.IO.CurrentIO.WriteColor(msg, ConsoleColor.DarkGreen, newLine, logTime);
         }
 
-        public static void Log(string msg, ConsoleColor color = ConsoleColor.Gray, bool newLine = true, bool logTime = true)
+        public static void Log(string msg, ConsoleColor color = ConsoleColor.White, bool newLine = true, bool logTime = true)
         {
             Sync.Tools.IO.CurrentIO.WriteColor(msg, color, newLine, logTime);
         }

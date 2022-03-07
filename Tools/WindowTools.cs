@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Channels;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using InfoReader.Configuration;
 using InfoReader.Configuration.Attributes;
@@ -17,9 +14,12 @@ namespace InfoReader.Tools
 {
     public static class WindowTools
     {
-        public static (Task, Form) StartMessageLoop(Form form)
+        public static (Thread, Form) StartMessageLoop(Form form)
         {
-            return (Task.Run(() => Application.Run(form)),form);
+            Thread msgThread = new Thread(() => Application.Run(form));
+            msgThread.SetApartmentState(ApartmentState.STA);
+            msgThread.Start();
+            return (msgThread, form);
         }
 
         public static int IndexProcessor(int len, int idx)
@@ -199,7 +199,13 @@ namespace InfoReader.Tools
                 Left = f.Width - 150,
                 Font = FontTools.MicrosoftYaHei
             };
-            saveBtn.Click += (_, _) => configurable.Save();
+            saveBtn.Click += (_, _) =>
+            {
+                configurable.Save();
+                ConfigTools.InitConfig(configurable,
+                    configurable.ConfigElement ?? throw new InvalidOperationException(), converterTypes);
+                //configurable.Save();
+            };
             f.Controls.Add(saveBtn);
 
             return f;

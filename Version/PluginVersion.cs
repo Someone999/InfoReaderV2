@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
+using InfoReader.Json.Deserializer;
 using InfoReader.Update;
+
 
 namespace InfoReader.Version
 {
@@ -43,6 +43,18 @@ namespace InfoReader.Version
             Addition = addition;
         }
 
+        public int GetVersionId()
+        {
+            HttpClient client = new HttpClient();
+            string rslt = client.GetStringAsync(string.Format(InfoReadUrl.VersionIdQueryUrl, ToString())).Result;
+
+            var pluginVersion = JsonDeserializer.Deserialize(rslt);
+
+            if (pluginVersion == null)
+                return -1;
+            return pluginVersion["version_id"]?.GetValue<int>() ?? -1;
+        }
+
         public static PluginVersion Parse(string version)
         {
             string[] parts = version.Split('.');
@@ -52,6 +64,13 @@ namespace InfoReader.Version
             }
             int[] parsed = (from part in parts select int.Parse(part)).ToArray();
             return new PluginVersion(parsed[0], parsed[1], parsed[2]);
+        }
+
+        public static PluginVersion LatestVersion => InfoReaderUpdateTools.GetLatestVersion();
+        public string? GetChangelog()
+        {
+            HttpClient client = new HttpClient();
+            return client.GetStringAsync(string.Format(InfoReadUrl.ChangelogQueryUrl, ToString())).Result;
         }
 
         public static bool operator ==(PluginVersion a, PluginVersion b)

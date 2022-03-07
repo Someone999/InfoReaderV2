@@ -1,0 +1,8 @@
+﻿<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
+  <Costura CreateTemporaryAssemblies='true'>
+      <Unmanaged32Assemblies>
+         bass.dll
+         /x86/SQLite.Interop.dll
+      </Unmanaged32Assemblies>
+  </Costura>
+</Weavers>

@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InfoReader.Tools.Downloader
 {
@@ -38,6 +33,11 @@ namespace InfoReader.Tools.Downloader
 
 
                 byte[] buffer = new byte[BufferSize];
+                string? directory = Path.GetDirectoryName(path);
+                if (directory != null && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
                 FileStream fstream = File.Create(path);
                 created = fstream;
                 int readLen = 0, downloadedLen = 0;
@@ -54,8 +54,11 @@ namespace InfoReader.Tools.Downloader
             {
                 client.CancelPendingRequests();
                 exception = e;
-                created?.Close();
                 return false;
+            }
+            finally
+            {
+                created?.Close();
             }
         }
 

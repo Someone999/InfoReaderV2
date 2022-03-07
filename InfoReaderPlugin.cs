@@ -5,21 +5,24 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Threading;
-using System.Windows.Forms;
+using System.Threading.Tasks;
 using InfoReader.Attributes;
 using InfoReader.Command;
 using InfoReader.Command.Parser;
 using InfoReader.Configuration;
-using InfoReader.Configuration.Attributes;
 using InfoReader.Configuration.Converter;
 using InfoReader.Configuration.Elements;
 using InfoReader.Mmf;
+using InfoReader.Resource;
 using InfoReader.Tools;
 using InfoReader.Tools.I8n;
+using InfoReader.Update;
 using InfoReader.Version;
 using OsuRTDataProvider;
 using osuTools;
+using osuTools.MD5Tools;
 using osuTools.OrtdpWrapper;
 using RealTimePPDisplayer;
 using Sync.Command;
@@ -30,11 +33,16 @@ namespace InfoReader
 {
     [InfoReaderVersion("1.0.21")]
     [SyncSoftRequirePlugin("RealTimePPDisplayerPlugin", "OsuRTDataProviderPlugin")]
-    public class InfoReaderPlugin: Plugin
+    public class InfoReaderPlugin : Plugin
     {
         internal readonly Dictionary<string, IConfigurable> Configurables = new();
         internal readonly Dictionary<string, IConfigElement> ConfigElements = new();
         internal readonly Dictionary<string, ICommandProcessor> CommandProcessors = new();
+        internal IResourceManager ResourceManager
+        {
+            get;
+            set;
+        }
 
         public PluginVersion? GetCurrentVersion()
         {
@@ -42,9 +50,9 @@ namespace InfoReader
             var attrs = type.GetCustomAttributes<InfoReaderVersionAttribute>();
             return attrs.ElementAt(0).PluginVersion;
         }
-        
 
-        internal void InitCommand(Dictionary<Type,object[]>? commandTypeArgs = null)
+
+        internal void InitCommand(Dictionary<Type, object[]>? commandTypeArgs = null)
         {
             Type[] commandTypes =
                 ReflectionTools.GetTypesWithInterface<ICommandProcessor>(Assembly.GetExecutingAssembly());
@@ -55,19 +63,19 @@ namespace InfoReader
                 {
                     args = commandTypeArgs[commandType];
                 }
-                ICommandProcessor? commandProcessor = (ICommandProcessor?) ReflectionTools.CreateInstance(commandType, args);
+                ICommandProcessor? commandProcessor = (ICommandProcessor?)ReflectionTools.CreateInstance(commandType, args);
                 if (commandProcessor == null)
                     continue;
                 CommandProcessors.Add(commandProcessor.MainCommand, commandProcessor);
             }
         }
 
-        internal void ScanConfigurations(Dictionary<Type, object[]>? commandTypeArgs = null)
+        internal void ScanConfigurations(Dictionary<Type, object?[]>? commandTypeArgs = null)
         {
             var types = ReflectionTools.GetTypesWithInterface<IConfigurable>(Assembly.GetExecutingAssembly());
             foreach (var type in types)
             {
-                object[] args = Array.Empty<object>();
+                object?[] args = Array.Empty<object>();
                 if (commandTypeArgs != null && commandTypeArgs.ContainsKey(type))
                 {
                     args = commandTypeArgs[type];
@@ -77,36 +85,127 @@ namespace InfoReader
                 {
                     continue;
                 }
-                Configurables.Add(configuration.ConfigArgName, configuration);
+                Configurables.Add(configuration.ConfigName, configuration);
             }
         }
 
         public InfoReaderConfiguration Configuration { get; }
-        public MmfConfiguration MmfConfiguration { get; }
+        public MmfConfiguration MmfConfiguration { get;  }
         public IMemoryDataSource? MemoryDataSource { get; private set; }
 
         public Dictionary<string, PropertyInfo> Variables { get; private set; } = new();
+        public Dictionary<string, PropertyInfo> LowerCasedVariables { get; } = new();
         public InfoReaderPlugin() : base("InfoReader", "Someone999")
         {
+            /*AppDomain.CurrentDomain.Load(Resource1.Newtonsoft_Json);
+            var s = ReflectAssemblies.NewtonsoftJson.Assembly;*/
+            
             string syncPath = Process.GetCurrentProcess().MainModule.FileName;
+            string path = "InfoReaderResources.ifrresc";
+            ResourceManager = ResourceManager<CompressedResourceContainerReader, CompressedResourceContainerWriter>.GetInstance
+            (path,
+                new Dictionary<Type, object?[]?>
+                {
+                    {typeof(CompressedResourceContainerReader),new object?[]{path, true}},
+                    {typeof(CompressedResourceContainerWriter),new object?[]{path, true}}
+                });
             string currentDir = ".\\InfoReader\\";
             Environment.CurrentDirectory = currentDir;
+            CheckFiles();
             var configElement = new TomlConfigElement("InfoReaderConfig.toml");
-            Dictionary<Type, object?[]> converterTypesArgs = new Dictionary<Type, object?[]>
-            {
-                {typeof(MmfListConverter), new object[] {this}}
-            };
-            ScanConfigurations();
-            ConfigTools.ReadConfigFile(Configurables.Values.ToArray(), converterTypesArgs, ConfigElements);
+            InitConfiguration();
             Configuration = (InfoReaderConfiguration)Configurables["program"];
-            MmfConfiguration = (MmfConfiguration) Configurables["mmf"];
+            MmfConfiguration = (MmfConfiguration)Configurables["mmf"];
+            CheckMigrate(configElement);
             InitCommand();
+            CheckConfigFileBackup();
             LocalizationInfo.Current = LocalizationInfo.GetLocalizationInfo(Configuration.LanguageId);
             EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(Loaded);
             EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitSyncCommand);
             ThreadPool.QueueUserWorkItem(state =>
-                Variables = VariableTools.GetAvailableVariables(typeof(OrtdpWrapper)));
+            {
+                Variables = VariableTools.GetAvailableVariables(typeof(OrtdpWrapper));
+                foreach (var varInfo in Variables)
+                {
+                    string lowerName = varInfo.Key.ToLowerInvariant();
+                    if (LowerCasedVariables.ContainsKey(lowerName))
+                        continue;
+                    LowerCasedVariables.Add(lowerName, varInfo.Value);
+                }
+            });
+
+            try
+            {
+                PluginVersion latestVersion = PluginVersion.LatestVersion;
+                Logger.LogNotification(LocalizationInfo.Current.Translations["LANG_INFO_CHECKUPDATE"]);
+                if ((GetCurrentVersion() ?? PluginVersion.InvalidVersion) < latestVersion)
+                {
+                    //Update disabled yet.
+                    Task.Run(() => new Updater().Update(latestVersion));
+                }
+            }
+            catch (Exception)
+            {
+                Logger.LogNotification(LocalizationInfo.Current.Translations["LANG_ERR_NETWORK"]);
+            }
+
             ThreadPool.QueueUserWorkItem(state => WaitingProcess());
+        }
+
+        private void CheckFiles()
+        {
+            ResourceManager.ResourceContainerReader.GetResources();
+        }
+
+        private void CheckConfigFileBackup()
+        {
+            var files = Array.Empty<string>();
+            if (Directory.Exists("ConfigBackup\\"))
+            {
+                files = Directory.GetFiles("ConfigBackup\\");
+            }
+
+            if (files.Length == 0)
+                return;
+            TimeSpan aWeek = TimeSpan.FromDays(7);
+            foreach (var file in files)
+            {
+                FileInfo fileInfo = new FileInfo(file);
+                if (!fileInfo.Exists)
+                {
+                    continue;
+                }
+                DateTime now = DateTime.Now.ToUniversalTime();
+
+                if (now - fileInfo.CreationTimeUtc > aWeek)
+                {
+                    fileInfo.Delete();
+                }
+            }
+
+        }
+
+        private void CheckMigrate(IConfigElement configElement)
+        {
+            if (!configElement["Migration"]["IsMigrated"].GetValue<bool>())
+            {
+                new MigrationAssistant(this).Migrate();
+            }
+        }
+
+        private void InitConfiguration()
+        {
+            Dictionary<Type, object?[]> converterTypesArgs = new Dictionary<Type, object?[]>
+            {
+                {typeof(MmfListConverter), new object[] {this}}
+            };
+            Dictionary<Type, object?[]> commandTypeArgs = new Dictionary<Type, object?[]>
+            {
+                {typeof(InfoReaderConfiguration), new object[]{this}}
+            };
+            ScanConfigurations(commandTypeArgs);
+            ConfigTools.ReadConfigFile(Configurables.Values.ToArray(), converterTypesArgs, ConfigElements);
+            
         }
 
         private void WaitingProcess()
@@ -122,7 +221,7 @@ namespace InfoReader
             string? dir = processes[0].MainModule.FileName;
             if (string.IsNullOrEmpty(dir))
                 return;
-            Configuration.GameDirectory = dir;
+            Configuration.GamePath = dir;
         }
 
         internal bool CommandProcessor(Arguments args)
@@ -162,7 +261,7 @@ namespace InfoReader
                 {
                     string notification = string.Format(LocalizationInfo.Current.Translations["LANG_ERR_UNHANDLEDEXCEPTION"],
                         processor.MainCommand, e);
-                    Tools.Logger.LogError(notification);
+                    Logger.LogError(notification);
                 }
 
                 return true;
@@ -203,7 +302,12 @@ namespace InfoReader
                     writer.WriteToFile(cfgFile);
                 }
             }
-            
+        }
+
+        public override void OnExit()
+        {
+            OnDisable();
+            base.OnExit();
         }
     }
 }

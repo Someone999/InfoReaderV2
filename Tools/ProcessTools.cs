@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace InfoReader.Tools
 {
@@ -19,7 +14,7 @@ namespace InfoReader.Tools
             var modules = process.Modules;
             foreach (ProcessModule module in modules)
             {
-                if (module.ModuleName.ToLower() == moduleName)
+                if (module.ModuleName.ToLower() == moduleName.ToLower())
                 {
                     return true;
                 }
