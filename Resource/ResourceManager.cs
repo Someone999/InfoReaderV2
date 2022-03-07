@@ -7,20 +7,6 @@ using InfoReader.Tools;
 
 namespace InfoReader.Resource
 {
-    public interface IResourceManager
-    {
-        IResourceContainerReader ResourceContainerReader { get; }
-        IResourceContainerWriter? ResourceContainerWriter { get; }
-    }
-
-    public interface IResourceManager<out TReader, out TWriter> : IResourceManager where TReader : IResourceContainerReader where TWriter : IResourceContainerWriter
-    {
-        new TReader ResourceContainerReader { get; }
-        new TWriter? ResourceContainerWriter { get; }
-    }
-
-
-
     public class ResourceManager<TReader,TWriter> :IResourceManager<TReader,TWriter> where TReader : IResourceContainerReader where TWriter : IResourceContainerWriter
     {
         private static readonly Dictionary<object, ResourceManager<TReader,TWriter>> ResourceManagers = new Dictionary<object, ResourceManager<TReader, TWriter>>();
@@ -57,7 +43,8 @@ namespace InfoReader.Resource
 
         ~ResourceManager()
         {
-
+            ResourceContainerReader.Close();
+            ResourceContainerWriter?.Close();
         }
     }
 }

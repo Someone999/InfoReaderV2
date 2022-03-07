@@ -8,8 +8,8 @@ namespace InfoReader.Resource
     {
         int Count { get; }
         bool IsCompressed { get; }
-        Resource? GetResource(string resourceName);
-        Resource[] GetResources();
+        ResourceFileInfo? GetResource(string resourceName);
+        ResourceFileInfo[] GetResources();
         void Close();
     }
 }

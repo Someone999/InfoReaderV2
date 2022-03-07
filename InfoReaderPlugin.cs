@@ -38,11 +38,7 @@ namespace InfoReader
         internal readonly Dictionary<string, IConfigurable> Configurables = new();
         internal readonly Dictionary<string, IConfigElement> ConfigElements = new();
         internal readonly Dictionary<string, ICommandProcessor> CommandProcessors = new();
-        internal IResourceManager ResourceManager
-        {
-            get;
-            set;
-        }
+        internal IResourceManager ResourceManager { get; set; }
 
         public PluginVersion? GetCurrentVersion()
         {
@@ -99,18 +95,23 @@ namespace InfoReader
         {
             /*AppDomain.CurrentDomain.Load(Resource1.Newtonsoft_Json);
             var s = ReflectAssemblies.NewtonsoftJson.Assembly;*/
+            string resFilePath = "InfoReaderResources.ifrresc";
+            FileTools.ConfirmDirectory("InfoReader\\");
+            string currentDir = ".\\InfoReader\\";
+            string realResFilePath = Path.Combine(currentDir, resFilePath);
+            if (File.Exists(resFilePath) && !File.Exists(realResFilePath))
+            {
+                File.Copy(resFilePath, realResFilePath);
+            }
             
-            string syncPath = Process.GetCurrentProcess().MainModule.FileName;
-            string path = "InfoReaderResources.ifrresc";
+            Environment.CurrentDirectory = currentDir;
             ResourceManager = ResourceManager<CompressedResourceContainerReader, CompressedResourceContainerWriter>.GetInstance
-            (path,
+            (resFilePath,
                 new Dictionary<Type, object?[]?>
                 {
-                    {typeof(CompressedResourceContainerReader),new object?[]{path, true}},
-                    {typeof(CompressedResourceContainerWriter),new object?[]{path, true}}
+                    {typeof(CompressedResourceContainerReader),new object?[]{resFilePath, true}},
+                    {typeof(CompressedResourceContainerWriter),new object?[]{resFilePath, true}}
                 });
-            string currentDir = ".\\InfoReader\\";
-            Environment.CurrentDirectory = currentDir;
             CheckFiles();
             var configElement = new TomlConfigElement("InfoReaderConfig.toml");
             InitConfiguration();
@@ -154,7 +155,27 @@ namespace InfoReader
 
         private void CheckFiles()
         {
-            ResourceManager.ResourceContainerReader.GetResources();
+            ResourceFileInfo[] resources = ResourceManager.ResourceContainerReader.GetResources();
+            foreach (var resourceFileInfo in resources)
+            {
+                if (resourceFileInfo.Exists())
+                    continue;
+                Logger.LogNotification("Lacked file has been released.");
+                resourceFileInfo.WriteToFile(resourceFileInfo.ResourcePath);
+            }
+
+            Assembly currentAsm = Assembly.GetExecutingAssembly();
+            string? asmDir = Path.GetDirectoryName(currentAsm.Location);
+            if (string.IsNullOrEmpty(asmDir))
+            {
+                asmDir = ".";
+            }
+
+            string sqliteDllDir = Path.Combine(asmDir, "x86\\");
+            if (Directory.Exists(sqliteDllDir)) 
+                return;
+            FileTools.ConfirmDirectory(sqliteDllDir);
+            File.Copy("x86\\SQLite.Interop.dll", Path.Combine(sqliteDllDir, "SQLite.Interop.dll"));
         }
 
         private void CheckConfigFileBackup()

@@ -6,14 +6,14 @@ namespace InfoReader.Resource;
 
 public static class ResourceContainerTools
 {
-    public static List<Resource> GeneralParser(Stream stream)
+    public static List<ResourceFileInfo> GeneralParser(Stream stream, bool autoClose)
     {
         if (stream.CanSeek && stream.Position != 0)
         {
             stream.Seek(0, SeekOrigin.Begin);
         }
         BinaryReader reader = new BinaryReader(stream);
-        List<Resource> resources = new List<Resource>();
+        List<ResourceFileInfo> resources = new List<ResourceFileInfo>();
         int fileCount = reader.ReadInt32();
         byte tag = reader.ReadByte();
         if (tag != 0xef)
@@ -23,7 +23,7 @@ public static class ResourceContainerTools
 
         for (int i = 0; i < fileCount; i++)
         {
-            string fileName = reader.ReadString();
+            string filePath = reader.ReadString();
             long byteLength = reader.ReadInt64();
             List<byte[]> dataSegments = new List<byte[]>();
             long segCount = (long)Math.Ceiling(byteLength / 16384.0);
@@ -48,14 +48,21 @@ public static class ResourceContainerTools
             {
                 throw new InvalidOperationException();
             }
-            resources.Add(new Resource(fileName, byteLength, new ResourceStream(dataSegments, byteLength)));
+            resources.Add(new ResourceFileInfo(filePath, byteLength, new ResourceStream(dataSegments, byteLength)));
         }
-        reader.Close();
+
+        if (autoClose)
+        {
+            //Console.WriteLine("Read stream closed");
+            reader.Close();
+        }
+
         return resources;
     }
 
     public static BinaryWriter? GeneralWriter(List<string> files, Stream containerStream, bool autoClose = true)
     {
+        bool fileNotExists = false;
         BinaryWriter writer = new BinaryWriter(containerStream);
         int fileCount = files.Count;
         writer.Write(fileCount);
@@ -64,12 +71,12 @@ public static class ResourceContainerTools
         {
             if (!File.Exists(file))
             {
-                continue;
+                Console.WriteLine($"File not exist.");
+                fileNotExists = true;
             }
             byte[] bts = File.ReadAllBytes(file);
             long len = bts.LongLength;
-            string fileName = Path.GetFileName(file);
-            writer.Write(fileName);
+            writer.Write(file);
             writer.Write(len);
             writer.Write(bts);
             writer.Write((byte)0xff);
@@ -77,7 +84,13 @@ public static class ResourceContainerTools
 
         if (autoClose)
         {
+            //Console.WriteLine("Write stream closed");
             writer.Close();
+        }
+
+        if (fileNotExists)
+        {
+            Console.WriteLine("The resource file may be incomplete.");
         }
         return autoClose ? null : writer;
     }

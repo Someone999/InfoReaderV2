@@ -33,7 +33,7 @@ namespace InfoReader.Tools
         public static void ConfirmDirectory(string path)
         {
             string? dir = Path.GetDirectoryName(path);
-            if (dir != null && !Directory.Exists(dir))
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
             {
                 if (string.IsNullOrEmpty(dir))
                 {

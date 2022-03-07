@@ -312,7 +312,9 @@
     <Compile Include="Resource\CompressedResourceContainerReader.cs" />
     <Compile Include="Resource\CompressedResourceContainerWriter.cs" />
     <Compile Include="Resource\IResourceContainerReader.cs" />
-    <Compile Include="Resource\Resource.cs" />
+    <Compile Include="Resource\IResourceContainerWriter.cs" />
+    <Compile Include="Resource\IResourceManager.cs" />
+    <Compile Include="Resource\ResourceFileInfo.cs" />
     <Compile Include="Resource\FileResourceContainerReader.cs" />
     <Compile Include="Resource\FileResourceContainerWriter.cs" />
     <Compile Include="Resource\ResourceContainerTools.cs" />
@@ -408,14 +410,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\RealTimePPDisplayer.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\injector.exe" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\x86\SQLite.Interop.dll" />
-    <Content Include="Resources\Newtonsoft.Json.dll" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,10 +1,11 @@
 ﻿using System.IO;
+using InfoReader.Tools;
 
 namespace InfoReader.Resource;
 
-public class Resource
+public class ResourceFileInfo
 {
-    public Resource(string resourcePath, long resourceSize, ResourceStream resourceStream)
+    public ResourceFileInfo(string resourcePath, long resourceSize, ResourceStream resourceStream)
     {
         ResourceName = Path.GetFileName(resourcePath);
         ResourceSize = resourceSize;
@@ -38,7 +39,10 @@ public class Resource
 
     public FileStream? WriteToFile(string path, bool autoClose = true)
     {
+        FileTools.ConfirmDirectory(path);
         var fs = File.Create(path);
         return (FileStream?) Write(fs, autoClose);
     }
+
+    public bool Exists() => File.Exists(ResourcePath);
 }

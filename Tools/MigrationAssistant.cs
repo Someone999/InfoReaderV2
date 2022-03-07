@@ -105,7 +105,7 @@ namespace InfoReader.Tools
                     { OsuGameStatus.Editing, "InfoReaderMmfEditing" },
                     { OsuGameStatus.Rank, "InfoReaderMmfResult" }
                 };
-                FileTools.ConfirmDirectory("MmfFormats");
+                FileTools.ConfirmDirectory("MmfFormats\\");
                 foreach (var mmf in mmfList)
                 {
                     if (!File.Exists($"MmfFormats\\{mmf.Key}FormatConfig.ifrfmt"))

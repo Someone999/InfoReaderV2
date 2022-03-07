@@ -7,9 +7,9 @@ namespace InfoReader.Resource;
 
 public class FileResourceContainerReader : IResourceContainerReader
 {
-    private List<Resource> _resources = new List<Resource>();
+    private List<ResourceFileInfo> _resources = new List<ResourceFileInfo>();
     private readonly Stream _innerStream;
-    public FileResourceContainerReader(string path)
+    public FileResourceContainerReader(string path, bool autoClose)
     {
         if (!File.Exists(path))
         {
@@ -19,35 +19,36 @@ public class FileResourceContainerReader : IResourceContainerReader
         else
         {
             _innerStream = File.OpenRead(path);
-            Parse(_innerStream);
+            Parse(_innerStream, autoClose);
         }
     }
 
-    public FileResourceContainerReader(Stream stream, Stream innerStream)
+    public FileResourceContainerReader(Stream stream, bool autoClose)
     {
-        Parse(stream);
+        Parse(stream, autoClose);
         _innerStream = stream;
     }
     
-    void Parse(Stream stream)
+    void Parse(Stream stream, bool autoClose)
     {
-        _resources = ResourceContainerTools.GeneralParser(stream);
+        _resources = ResourceContainerTools.GeneralParser(stream, autoClose);
     }
 
     public int Count => _resources.Count;
     public bool IsCompressed => false;
-    public Resource? GetResource(string resourceName)
+    public ResourceFileInfo? GetResource(string resourceName)
     {
         return _resources.FirstOrDefault(r => r.ResourceName.Equals(resourceName,StringComparison.InvariantCultureIgnoreCase));
     }
 
-    public Resource[] GetResources()
+    public ResourceFileInfo[] GetResources()
     {
         return _resources.ToArray();
     }
 
     public void Close()
     {
+        //Console.WriteLine($"[{nameof(FileResourceContainerReader)}] Stream closed");
         _innerStream.Close();
     }
 }

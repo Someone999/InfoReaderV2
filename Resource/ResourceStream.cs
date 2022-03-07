@@ -18,6 +18,10 @@ public class ResourceStream : Stream
 
     public byte[] GetDataSegment(long pos, int length)
     {
+        if (length == 0)
+        {
+            return Array.Empty<byte>();
+        }
         long startSeg = pos / SegmentLength;
         long startPos = pos % SegmentLength;
         long startSize = length;
@@ -67,6 +71,7 @@ public class ResourceStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
+       
         if(count < 0)
             throw new ArgumentOutOfRangeException(nameof(count), "Can not read previous bytes.");
         if (_offset + count > _length - 1)
