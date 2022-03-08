@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using InfoReader.Json.Deserializer;
 using InfoReader.Tools;
 
 namespace InfoReader.Json.Objects;
@@ -22,6 +23,7 @@ public class JsonObject : IJsonContainer
     public string? Name { get; }
     public IJsonContainer this[object key] => _containers.First(e => e.Name == key.ToString());
     public int Count => _containers.Count;
+    public JsonValueType ValueType => JsonValueType.Object;
 
     public void Add(IJsonContainer jsonContainer)
     {

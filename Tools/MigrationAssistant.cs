@@ -166,7 +166,8 @@ namespace InfoReader.Tools
             {
                 pluginCfg.SetValue("LanguageId", _syncConfigFile["Sync.DefaultConfiguration"]["Language"].GetValue<string>());
             }
-            var migrationCfg = _pluginConfigElement["Migration"] ?? throw new InvalidOperationException();
+            var migrationCfg = _pluginConfigElement["Migration"] ?? throw new InfoReaderInternalException
+                (new KeyNotFoundException("Migration setting is missing."));
             if (migrationCfg["IsMigrated"].GetValue<bool>())
             {
                 return true;

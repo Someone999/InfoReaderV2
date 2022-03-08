@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using InfoReader.Exceptions;
 using InfoReader.Json.Objects;
 
 namespace InfoReader.Json.Deserializer
@@ -38,7 +39,7 @@ namespace InfoReader.Json.Deserializer
 
                         if (!inObject && !inArray)
                         {
-                            throw new InvalidOperationException("Array must be in an object or in an array.");
+                            throw new JsonDeserializerException("Array must be in an object or in an array.");
                         }
 
                         currentArray = new JsonArray(stack.Peek(),
@@ -90,7 +91,7 @@ namespace InfoReader.Json.Deserializer
                         propertyName = token.TokenValue?.ToString();
                         if (propertyName == null)
                         {
-                            throw new FormatException("Property name can not be null.");
+                            throw new JsonDeserializerException("Property name can not be null.");
                         }
                         break;
                     case JsonTokenType.Colon:
@@ -102,11 +103,13 @@ namespace InfoReader.Json.Deserializer
                         {
                             if (stack.Peek() is JsonObject jsonObj)
                             {
-                                jsonObj.Add(new JsonProperty(propertyName, new JsonValue(propertyValue, currentObject, propertyName), currentObject));
+                                jsonObj.Add(new JsonProperty(propertyName,
+                                    new JsonValue(propertyValue, currentObject, propertyName, token.ValueType),
+                                    currentObject));
                             }
                             else
                             {
-                                throw new InvalidOperationException("Json property can only appears in an object");
+                                throw new JsonDeserializerException("Json property can only appears in an object");
                             }
                             propertyName = "";
                         }
@@ -137,7 +140,7 @@ namespace InfoReader.Json.Deserializer
             var deserialize = Deserialize(json);
             if (deserialize == null)
             {
-                throw new FormatException("Not a valid json text.");
+                throw new JsonDeserializerException("Not a valid json text.");
             }
             return deserialize.GetValue<T>();
         }

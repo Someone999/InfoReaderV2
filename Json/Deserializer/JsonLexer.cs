@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using InfoReader.Exceptions;
 
 namespace InfoReader.Json.Deserializer;
 
@@ -37,17 +38,17 @@ public class JsonLexer
     public JsonLexer(string input)
     {
         int quote = input.Where(c => c == '"').ToArray().Length;
-        ThrowWhen(quote % 2 != 0);
+        ThrowWhen(quote % 2 != 0, "Quotes count mismatched.");
 
         _reader = new StringReader(input);
         Parse();
     }
 
-    void ThrowWhen(bool condition)
+    void ThrowWhen(bool condition, string info)
     {
         if (condition)
         {
-            throw new ArgumentException();
+            throw new JsonLexerException(info);
         }
     }
 
@@ -76,7 +77,7 @@ public class JsonLexer
             switch (currentChar)
             {
                 case 'n':
-                    ThrowWhen(isNullValue || isTrueValue || isFalseValue);
+                    ThrowWhen(isNullValue || isTrueValue || isFalseValue, "Unexpected special value.");
                     char[] tmpBuffer0 = new char[4];
                     _reader.Read(tmpBuffer0, 0, 4);
                     if (new string(tmpBuffer0) == "null")
@@ -86,7 +87,7 @@ public class JsonLexer
 
                     break;
                 case 't':
-                    ThrowWhen(isNullValue || isTrueValue || isFalseValue);
+                    ThrowWhen(isNullValue || isTrueValue || isFalseValue, "Unexpected special value.");
                     char[] tmpBuffer1 = new char[4];
                     _reader.Read(tmpBuffer1, 0, 4);
                     if (new string(tmpBuffer1) == "true")
@@ -96,7 +97,7 @@ public class JsonLexer
 
                     break;
                 case 'f':
-                    ThrowWhen(isNullValue || isTrueValue || isFalseValue);
+                    ThrowWhen(isNullValue || isTrueValue || isFalseValue, "Unexpected special value.");
                     char[] tmpBuffer2 = new char[5];
                     _reader.Read(tmpBuffer2, 0, 5);
                     if (new string(tmpBuffer2) == "false")
@@ -108,21 +109,21 @@ public class JsonLexer
 
                 case '"':
                 {
-                    ThrowWhen(isNullValue || isTrueValue || isFalseValue);
+                    ThrowWhen(isNullValue || isTrueValue || isFalseValue, "Unexpected special value.");
                     bool inArray = startTokens.Count > 0 && startTokens.Peek() == JsonTokenType.StartArray;
-                    ThrowWhen(inArray && _tokens.Last().TokenType == JsonTokenType.EndObject);
+                    ThrowWhen(inArray && _tokens.Last().TokenType == JsonTokenType.EndObject, "The brackets are not closed.");
                     char c;
                     Read();
                     while ((c = Read()) != '"')
                     {
                         val.Append(c);
-                        ThrowWhen(c == '\0');
+                        ThrowWhen(c == '\0', "Unexpected end.");
                     }
 
                     break;
                 }
                 case ':':
-                    ThrowWhen(isNullValue || isTrueValue || isFalseValue);
+                    ThrowWhen(isNullValue || isTrueValue || isFalseValue, "Unexpected special value.");
                     currentToken.TokenType = JsonTokenType.PropertyName;
                     currentToken.TokenValue = val.ToString();
                     val.Clear();
@@ -154,7 +155,7 @@ public class JsonLexer
                     }
                     
                     notPropVal = _tokens.Last().TokenType != JsonTokenType.PropertyValue;
-                    ThrowWhen(notPropVal && notEnd);
+                    ThrowWhen(notPropVal && notEnd, "JSON property or end token expected.");
                     
                     
                     isNullValue = false;
@@ -166,7 +167,7 @@ public class JsonLexer
                     break;
                 }
                 case '{':
-                    ThrowWhen(isNullValue || isTrueValue || isFalseValue);
+                    ThrowWhen(isNullValue || isTrueValue || isFalseValue, "Unexpected special value.");
                     JsonToken? lastPropertyTokenObj = LastPropertyToken();
                     if (lastPropertyTokenObj != null)
                         lastPropertyTokenObj.ValueType = JsonValueType.Object;
@@ -176,7 +177,7 @@ public class JsonLexer
                     break;
                 case '}':
                 {
-                    ThrowWhen(startTokens.Pop() != JsonTokenType.StartObject);
+                    ThrowWhen(startTokens.Pop() != JsonTokenType.StartObject, "StartObject token expected.");
                
 
                     if (_tokens.Last().TokenType == JsonTokenType.Colon)
@@ -195,20 +196,21 @@ public class JsonLexer
                     {
                         lastPropertyTokenArr.ValueType = JsonValueType.Array;
                     }
-                    ThrowWhen(isNullValue || isTrueValue || isFalseValue || lastPropertyTokenArr == null);
+                    ThrowWhen(isNullValue || isTrueValue || isFalseValue , "Unexpected special value.");
+                    ThrowWhen(lastPropertyTokenArr == null,"JSON array must has a name");
                     startTokens.Push(JsonTokenType.StartArray);
                     _tokens.Add(new JsonToken(JsonTokenType.StartArray, "[", JsonValueType.None));
                     Read();
                     break;
                 case ']':
-                    ThrowWhen(startTokens.Pop() != JsonTokenType.StartArray);
+                    ThrowWhen(startTokens.Pop() != JsonTokenType.StartArray, "End token mismatched");
 
                     _tokens.Add(new JsonToken(JsonTokenType.EndArray, "]",JsonValueType.None));
                     Read();
                     break;
                 default:
                 {
-                    ThrowWhen(isNullValue || isTrueValue || isFalseValue);
+                    ThrowWhen(isNullValue || isTrueValue || isFalseValue, "Unexpected special value.");
                     if (char.IsDigit(currentChar))
                     {
                         while (char.IsDigit(currentChar))
@@ -261,9 +263,10 @@ public class JsonLexer
 
         var lastTokenType = _tokens.Last().TokenType;
 
-        if ((startTokens.Count > 0 || ( lastTokenType & JsonTokenType.EndToken) == 0) && lastTokenType != JsonTokenType.PropertyValue)
-        {
-            throw new ArgumentException("Unexpected end.");
-        }
+        ThrowWhen(
+            (startTokens.Count > 0 || (lastTokenType & JsonTokenType.EndToken) == 0) &&
+            lastTokenType != JsonTokenType.PropertyValue, "Unexpected end.");
+
+
     }
 }

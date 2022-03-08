@@ -1,4 +1,5 @@
 ﻿using System;
+using InfoReader.Json.Deserializer;
 
 namespace InfoReader.Json.Objects
 {
@@ -10,5 +11,6 @@ namespace InfoReader.Json.Objects
         T? GetValue<T>();
         object? GetValue(Type t);
         int Count { get; }
+        JsonValueType ValueType { get; }
     }
 }

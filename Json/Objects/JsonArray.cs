@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using InfoReader.Json.Deserializer;
 using InfoReader.Tools;
 
 namespace InfoReader.Json.Objects
@@ -114,6 +115,7 @@ namespace InfoReader.Json.Objects
         }
 
         public int Count => _containers.Count;
+        public JsonValueType ValueType => JsonValueType.Array;
 
         public IEnumerator<IJsonContainer> GetEnumerator()
         {

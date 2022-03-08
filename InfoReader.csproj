@@ -256,7 +256,12 @@
     <Compile Include="Configuration\IConfigWriter.cs" />
     <Compile Include="Configuration\MmfConfiguration.cs" />
     <Compile Include="Configuration\Serializer\IConfigSerializer.cs" />
+    <Compile Include="Exceptions\CommandInvocationException.cs" />
     <Compile Include="Exceptions\InfoReaderExceptionBase.cs" />
+    <Compile Include="Exceptions\InfoReaderInternalException.cs" />
+    <Compile Include="Exceptions\JsonDeserializerException.cs" />
+    <Compile Include="Exceptions\JsonLexerException.cs" />
+    <Compile Include="Exceptions\JsonParseException.cs" />
     <Compile Include="ExpressionMatcher\ValueExpressionMatcher.cs" />
     <Compile Include="ExpressionParser\Nodes\BoolExpressionNode.cs" />
     <Compile Include="ExpressionParser\Nodes\ExpressionNode.cs" />

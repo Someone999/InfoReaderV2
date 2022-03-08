@@ -1,4 +1,5 @@
 ﻿using System;
+using InfoReader.Json.Deserializer;
 
 namespace InfoReader.Json.Objects;
 
@@ -6,11 +7,12 @@ public class JsonValue : IJsonContainer
 {
     private object? _innerValue;
 
-    internal JsonValue(object? innerValue, IJsonContainer? parent, string name)
+    internal JsonValue(object? innerValue, IJsonContainer? parent, string name, JsonValueType valueType)
     {
         _innerValue = innerValue;
         Parent = parent;
         Name = name;
+        ValueType = valueType;
     }
 
     public string Name { get; }
@@ -36,4 +38,5 @@ public class JsonValue : IJsonContainer
     }
 
     public int Count => 1;
+    public JsonValueType ValueType { get; }
 }

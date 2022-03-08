@@ -1,4 +1,5 @@
 ﻿using System;
+using InfoReader.Json.Deserializer;
 
 namespace InfoReader.Json.Objects;
 
@@ -36,4 +37,5 @@ public class JsonProperty : IJsonContainer
     }
 
     public int Count => 1;
+    public JsonValueType ValueType => JsonValueType.Property;
 }

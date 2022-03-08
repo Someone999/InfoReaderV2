@@ -94,8 +94,6 @@ namespace InfoReader
         public Dictionary<string, PropertyInfo> LowerCasedVariables { get; } = new();
         public InfoReaderPlugin() : base("InfoReader", "Someone999")
         {
-            /*AppDomain.CurrentDomain.Load(Resource1.Newtonsoft_Json);
-            var s = ReflectAssemblies.NewtonsoftJson.Assembly;*/
             string resFilePath = "InfoReaderResources.ifrresc";
             FileTools.ConfirmDirectory("InfoReader\\");
             string currentDir = ".\\InfoReader\\";
@@ -282,14 +280,20 @@ namespace InfoReader
                     Console.WriteLine(e.Message);
                     return true;
                 }
-                if (!processor.AutoCatch)
-                    throw new CommandInvocationException(LocalizationInfo.Current.Translations["LANG_ERR_PROCESSOREXCEPTION"]);
+
+                if (processor.AutoCatch)
+                {
+                    Logger.LogError(LocalizationInfo.Current.Translations["LANG_ERR_PROCESSOREXCEPTION"]
+                        .Format(processor.MainCommand, e.Message));
+                    return true;
+                }
+
                 bool handled = processor.OnUnhandledException(this, e);
                 if (!handled)
                 {
-                    string notification = string.Format(LocalizationInfo.Current.Translations["LANG_ERR_UNHANDLEDEXCEPTION"],
-                        processor.MainCommand, e);
-                    Logger.LogError(notification);
+                    throw new CommandInvocationException(LocalizationInfo.Current
+                        .Translations["LANG_ERR_UNHANDLEDEXCEPTION"]
+                        .Format(processor.MainCommand, string.Empty), e);
                 }
 
                 return true;

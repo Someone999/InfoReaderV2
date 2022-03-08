@@ -14,6 +14,7 @@ namespace InfoReader.Json.Deserializer
         Null = 32,
         Object = 64,
         Array = 128,
+        Property = 256,
         Number = Integer | Float,
         
     }
