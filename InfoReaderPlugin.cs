@@ -14,6 +14,7 @@ using InfoReader.Command.Parser;
 using InfoReader.Configuration;
 using InfoReader.Configuration.Converter;
 using InfoReader.Configuration.Elements;
+using InfoReader.Exceptions;
 using InfoReader.Mmf;
 using InfoReader.Resource;
 using InfoReader.Tools;
@@ -155,6 +156,7 @@ namespace InfoReader
 
         private void CheckFiles()
         {
+            bool needRestart = false;
             ResourceFileInfo[] resources = ResourceManager.ResourceContainerReader.GetResources();
             foreach (var resourceFileInfo in resources)
             {
@@ -162,6 +164,7 @@ namespace InfoReader
                     continue;
                 Logger.LogNotification("Lacked file has been released.");
                 resourceFileInfo.WriteToFile(resourceFileInfo.ResourcePath);
+                needRestart = true;
             }
 
             Assembly currentAsm = Assembly.GetExecutingAssembly();
@@ -176,6 +179,10 @@ namespace InfoReader
                 return;
             FileTools.ConfirmDirectory(sqliteDllDir);
             File.Copy("x86\\SQLite.Interop.dll", Path.Combine(sqliteDllDir, "SQLite.Interop.dll"));
+            if (needRestart)
+            {
+                getHoster()?.RestartSync();
+            }
         }
 
         private void CheckConfigFileBackup()
@@ -276,7 +283,7 @@ namespace InfoReader
                     return true;
                 }
                 if (!processor.AutoCatch)
-                    throw new Exception(LocalizationInfo.Current.Translations["LANG_ERR_PROCESSOREXCEPTION"]);
+                    throw new CommandInvocationException(LocalizationInfo.Current.Translations["LANG_ERR_PROCESSOREXCEPTION"]);
                 bool handled = processor.OnUnhandledException(this, e);
                 if (!handled)
                 {

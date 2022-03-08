@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using InfoReader.Configuration;
 using InfoReader.Configuration.Elements;
+using InfoReader.Exceptions;
 using InfoReader.Mmf;
 using InfoReader.Tools.I8n;
 using osuTools.Game;
@@ -15,12 +16,13 @@ namespace InfoReader.Tools
     {
         private IniConfigElement? _syncConfigFile;
         private InfoReaderPlugin _plugin;
-        private IConfigElement? _pluginConfigElement;
+        private IConfigElement _pluginConfigElement;
 
         public MigrationAssistant(InfoReaderPlugin plugin)
         {
             _plugin = plugin;
-            _pluginConfigElement = _plugin.Configurables["program"].ConfigElement;
+            _pluginConfigElement = _plugin.Configurables["program"]?.ConfigElement ?? 
+                                   throw new InfoReaderInternalException(new InvalidOperationException("Config element is null"));
             if (!File.Exists("..\\..\\config.ini"))
                 return;
             _syncConfigFile = new IniConfigElement("..\\..\\config.ini");
@@ -39,16 +41,18 @@ namespace InfoReader.Tools
                 }
                 Logger.Log("[InfoReader] Migrating settings...");
 
-                pluginCfg.SetValue("LanguageId", _syncConfigFile["Sync.DefaultConfiguration"]["Language"].GetValue<string>());
+
                 //Logger.Log($"LanguageId set to {_syncConfigFile["Sync.DefaultConfiguration"]["Language"].GetValue<string>()}");
 
-                var selfCfg = _syncConfigFile["InfoReader.Setting"];
+                //var selfCfg = _syncConfigFile["InfoReader.Setting"];
                 if (!_syncConfigFile.ToDictionary().ContainsKey("InfoReader.Setting"))
                 {
                     return true;
                 }
+
+                var selfCfg = _syncConfigFile["InfoReader.Setting"];
                 //Logger.Log("Reading config...");
-                
+
                 pluginCfg.SetValue("OsuApiKey", selfCfg["ApiKey"].GetValue<string>());
                 //Logger.Log($"OsuApiKey set to {selfCfg["ApiKey"].GetValue<string>()}");
 
@@ -155,20 +159,19 @@ namespace InfoReader.Tools
             }
         }
 
-        private int _retryCount = 0, _maxRetry = 5;
         internal bool Migrate()
         {
-            var migrationCfg = _pluginConfigElement?["Migration"] ?? throw new InvalidOperationException();
+            var pluginCfg = _pluginConfigElement["Program"];
+            if (_syncConfigFile != null)
+            {
+                pluginCfg.SetValue("LanguageId", _syncConfigFile["Sync.DefaultConfiguration"]["Language"].GetValue<string>());
+            }
+            var migrationCfg = _pluginConfigElement["Migration"] ?? throw new InvalidOperationException();
             if (migrationCfg["IsMigrated"].GetValue<bool>())
             {
                 return true;
             }
             bool cfg = MigrateConfig(), mmf = MigrateMmf();
-            if (!cfg || !mmf)
-            {
-                Logger.LogError(LocalizationInfo.Current.Translations["LANG_ERR_MIGRATION_FAILED"]);
-                return false;
-            }
             migrationCfg.SetValue("IsMigrated", true);
             if (_pluginConfigElement is IConfigWriter writer)
             {

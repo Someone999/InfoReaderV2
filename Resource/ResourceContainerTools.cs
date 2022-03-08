@@ -38,7 +38,7 @@ public static class ResourceContainerTools
                 int realRead = reader.Read(data, 0, readSize);
                 if (realRead != readSize)
                 {
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("Not a valid resource file.");
                 }
                 dataSegments.Add(data);
                 offset += readSize;
@@ -46,7 +46,7 @@ public static class ResourceContainerTools
             byte endFlag = reader.ReadByte();
             if (endFlag != 0xff)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Not a valid resource file.");
             }
             resources.Add(new ResourceFileInfo(filePath, byteLength, new ResourceStream(dataSegments, byteLength)));
         }
@@ -71,7 +71,7 @@ public static class ResourceContainerTools
         {
             if (!File.Exists(file))
             {
-                Console.WriteLine($"File not exist.");
+                Console.WriteLine("File not exist.");
                 fileNotExists = true;
             }
             byte[] bts = File.ReadAllBytes(file);
