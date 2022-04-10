@@ -20,7 +20,9 @@ namespace InfoReader.Command
             builder.AppendLine(LocalizationInfo.Current.Translations["LANG_HELP_GETINFO_EXTRA"]);
             builder.AppendLine(LocalizationInfo.Current.Translations["LANG_INFO_AVAILABLECMDS"]);
             foreach (var command in _plugin?.CommandProcessors ?? new Dictionary<string, ICommandProcessor>())
+            {
                 builder.AppendLine(command.Value.MainCommand);
+            }
             return builder.ToString();
         }
 

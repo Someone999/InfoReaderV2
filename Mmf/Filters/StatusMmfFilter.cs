@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using osuTools.Game;
 
 namespace InfoReader.Mmf.Filters;
@@ -16,13 +17,8 @@ public class StatusMmfFilter: IMmfFilter
         }
 
         string[] stats = input.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-        OsuGameStatus status = 0;
-        foreach (var stat in stats)
-        {
-            status |= (OsuGameStatus) Enum.Parse(typeof(OsuGameStatus), stat);
-        }
 
-        return status;
+        return stats.Aggregate<string?, OsuGameStatus>(0, (current, stat) => current | (OsuGameStatus) Enum.Parse(typeof(OsuGameStatus), stat));
     }
 
     public MmfBase Filter(Dictionary<string, object> config)

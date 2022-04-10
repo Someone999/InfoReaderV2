@@ -16,13 +16,20 @@ public static class ResourceContainerTools
         List<ResourceFileInfo> resources = new List<ResourceFileInfo>();
         int fileCount = reader.ReadInt32();
         byte tag = reader.ReadByte();
-        if (tag != 0xef)
+        if (tag != 0xed)
         {
             throw new InvalidOperationException("Not a valid resource file.");
         }
+        
 
         for (int i = 0; i < fileCount; i++)
         {
+            byte forceToReplace = reader.ReadByte();
+            tag = reader.ReadByte();
+            if (tag != 0xef)
+            {
+                throw new InvalidOperationException("Not a valid resource file.");
+            }
             string filePath = reader.ReadString();
             long byteLength = reader.ReadInt64();
             List<byte[]> dataSegments = new List<byte[]>();
@@ -48,7 +55,10 @@ public static class ResourceContainerTools
             {
                 throw new InvalidOperationException("Not a valid resource file.");
             }
-            resources.Add(new ResourceFileInfo(filePath, byteLength, new ResourceStream(dataSegments, byteLength)));
+            resources.Add(new ResourceFileInfo(filePath, byteLength, new ResourceStream(dataSegments, byteLength))
+            {
+                ForcedReplace = forceToReplace != 0
+            });
         }
 
         if (autoClose)
@@ -60,23 +70,25 @@ public static class ResourceContainerTools
         return resources;
     }
 
-    public static BinaryWriter? GeneralWriter(List<string> files, Stream containerStream, bool autoClose = true)
+    public static BinaryWriter? GeneralWriter(List<ResourceWriteFile> files, Stream containerStream, bool autoClose = true)
     {
         bool fileNotExists = false;
         BinaryWriter writer = new BinaryWriter(containerStream);
         int fileCount = files.Count;
         writer.Write(fileCount);
-        writer.Write((byte)0xef);
+        writer.Write((byte)0xed);
         foreach (var file in files)
         {
-            if (!File.Exists(file))
+            if (!file.Exists)
             {
                 Console.WriteLine("File not exist.");
                 fileNotExists = true;
             }
-            byte[] bts = File.ReadAllBytes(file);
+            writer.Write(file.ForcedReplace);
+            writer.Write((byte)0xef);
+            byte[] bts = file.ReadAllBytes();
             long len = bts.LongLength;
-            writer.Write(file);
+            writer.Write(file.FilePath);
             writer.Write(len);
             writer.Write(bts);
             writer.Write((byte)0xff);

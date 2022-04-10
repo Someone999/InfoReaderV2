@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,68 @@ namespace InfoReader.Json.Deserializer;
 
 public class JsonLexer
 {
+    private bool IsHex(char c)
+    {
+        c = char.ToLower(c);
+        if (c is >= 'a' and <= 'f' || char.IsDigit(c))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    private bool IsHex(params char[] c)
+    {
+        return c.Aggregate(false, (b, c1) => IsHex(c1) && b);
+    }
+    char ProcessEscape(char escape)
+    {
+        escape = char.ToLower(escape);
+        switch (escape)
+        {
+            case 'a': return '\a';
+            case 'b': return '\b';
+            case 'f': return '\f';
+            case 'n': return '\n';
+            case 'r': return '\r';
+            case 't': return '\t';
+            case 'v': return '\v';
+            case '\\': return '\\';
+            case '"': return '"';
+            case '\'': return '\'';
+            case 'x':
+                char asciiCh0 = Read();
+                char asciiCh1 = Read();
+                if (IsHex(asciiCh0, asciiCh1))
+                {
+                    string s = new string(new char []{asciiCh0, asciiCh1});
+                    return (char)int.Parse(s, NumberStyles.HexNumber);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid escape sequence.");
+                }
+                break;
+            case 'u' :
+                char unicodeCh0 = Read();
+                char unicodeCh1 = Read();
+                char unicodeCh2 = Read();
+                char unicodeCh3 = Read();
+                if (IsHex(unicodeCh0, unicodeCh1, unicodeCh2, unicodeCh3))
+                {
+                    string s = new string(new char[] {unicodeCh0, unicodeCh1, unicodeCh2, unicodeCh3});
+                    return (char)int.Parse(s, NumberStyles.HexNumber);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid escape sequence.");
+                }
+                break;
+            default: throw new ArgumentException("Invalid escape sequence.");
+        }
+        throw new ArgumentException("Invalid escape sequence.");
+    }
+    
     private readonly StringReader _reader;
     private readonly List<JsonToken> _tokens = new List<JsonToken>();
     public JsonToken[] Tokens => _tokens.ToArray();
@@ -116,7 +179,40 @@ public class JsonLexer
                     Read();
                     while ((c = Read()) != '"')
                     {
-                        val.Append(c);
+                        if (c == '\\')
+                        {
+                            char escapeChr = Read();
+                            if (char.IsDigit(escapeChr))
+                            {
+                                if (char.IsDigit(Peek()))
+                                {
+                                    char asciiCh0 = Peek();
+                                    char asciiCh1 = Read();
+                                    char asciiCh2 = Read();
+                                    if (IsHex(asciiCh0, asciiCh1, asciiCh2))
+                                    {
+                                        string s = new string(new char []{asciiCh0, asciiCh1, asciiCh2});
+                                        val.Append((char)Convert.ToInt32(s, 8));
+                                    }
+                                    else
+                                    {
+                                        throw new ArgumentException("Invalid escape sequence.");
+                                    }
+                                }
+                                else
+                                {
+                                    throw new ArgumentException("Invalid escape sequence.");
+                                }
+                            }
+                            else
+                            {
+                                val.Append(ProcessEscape(escapeChr));
+                            }
+                        }
+                        else
+                        {
+                            val.Append(c);
+                        }
                         ThrowWhen(c == '\0', "Unexpected end.");
                     }
 
@@ -197,7 +293,7 @@ public class JsonLexer
                         lastPropertyTokenArr.ValueType = JsonValueType.Array;
                     }
                     ThrowWhen(isNullValue || isTrueValue || isFalseValue , "Unexpected special value.");
-                    ThrowWhen(lastPropertyTokenArr == null,"JSON array must has a name");
+                    //ThrowWhen(lastPropertyTokenArr == null,"JSON array must has a name");
                     startTokens.Push(JsonTokenType.StartArray);
                     _tokens.Add(new JsonToken(JsonTokenType.StartArray, "[", JsonValueType.None));
                     Read();

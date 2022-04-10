@@ -92,8 +92,7 @@ namespace InfoReader.Tools
         {
             try
             {
-                var mmfCfg = _plugin.Configurables["mmf"] as MmfConfiguration;
-                if (mmfCfg == null)
+                if (_plugin.Configurables["mmf"] is not MmfConfiguration mmfCfg)
                 {
                     return false;
                 }

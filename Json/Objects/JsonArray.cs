@@ -76,7 +76,6 @@ namespace InfoReader.Json.Objects
             }
             tmpList = new List<object?>();
             dynamic obj = tmpList;
-            object[] ooo;
             foreach (var jsonContainer in _containers)
             {
                 

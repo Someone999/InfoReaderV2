@@ -90,14 +90,14 @@ namespace InfoReader.Configuration
                 MmfConfigControl control = new MmfConfigControl(mmfBase);
                 control.Top = (form.Controls.Count - 1) * control.Height + 10 * (form.Controls.Count - 1) + 50;
                 control.Visible = true;
-                form.Controls.Add(control);
-                form.Refresh();
+                //form.Controls.Clear();
+                AddControls(form);
             };
             form.Controls.Add(addMmfBtn);
             Label l = new Label();
             l.Top = 50;
             l.Left = 0;
-            for (int i = 0; i < MmfList.Count; i++)
+            for (int i = 0; i < MmfList?.Count; i++)
             {
                 MmfConfigControl control = new(MmfList[i]);
                 mmfWidth = control.Width;
@@ -109,7 +109,7 @@ namespace InfoReader.Configuration
             form.AutoScroll = true;
             form.Width = mmfWidth + 50;
             addMmfBtn.Left = mmfWidth - 50;
-            form.Height = mmfHeight * (MmfList.Count > 3 ? 3 : MmfList.Count) + 30 * 3;
+            form.Height = mmfHeight * (MmfList?.Count > 3 ? 3 : MmfList?.Count ?? 0) + 30 * 3;
             form.Controls.AddRange(controls.ToArray());
         }
     }

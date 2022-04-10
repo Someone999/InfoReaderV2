@@ -1,10 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using InfoReader.ExpressionMatcher;
-using InfoReader.ExpressionParser.Tools;
+using InfoReader.Tools;
 using InfoReader.Tools.I8n;
+using Lexer;
+using Lexer.Expressions;
+using Lexer.RpnExpression;
 using Nett;
+using osuTools.OrtdpWrapper;
+using RpnTools = InfoReader.ExpressionParser.Tools.RpnTools;
 
 namespace InfoReader.Mmf
 {
@@ -34,6 +40,7 @@ namespace InfoReader.Mmf
         public string Format { get; private set; } = "";
         protected MmfBase(string name)
         {
+           
             MappedFile = System.IO.MemoryMappedFiles.MemoryMappedFile.CreateOrOpen(name, 2048);
             Name = name;
             _fileReadTimer.Interval = 500;
@@ -105,15 +112,33 @@ namespace InfoReader.Mmf
 
         private void _fileReadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            if (string.IsNullOrEmpty(FormatFile))
+            {
+                return;
+            }
             if (!File.Exists(FormatFile))
             {
+                FileTools.ConfirmDirectory(FormatFile);
                 File.Create(FormatFile).Close();
             }
-            Format = Enabled ? File.ReadAllText(FormatFile) : string.Empty;
+
+            try
+            {
+                Format = Enabled ? File.ReadAllText(FormatFile) : string.Empty;
+            }
+            catch (Exception)
+            {
+                //None
+            }
+            
         }
 
         public virtual void Update(InfoReaderPlugin instance)
         {
+            if (!RpnGlobalTypes.VariableReflectTypes.ContainsKey(typeof(OrtdpWrapper)))
+            {
+                RpnGlobalTypes.VariableReflectTypes.Add(typeof(OrtdpWrapper), instance.MemoryDataSource);
+            }
             ValueExpressionMatcher matcher = new ValueExpressionMatcher();
             var vals = matcher.Match(Format);
             StringBuilder innerFormat = new StringBuilder(Format);
@@ -136,13 +161,24 @@ namespace InfoReader.Mmf
                 {
                     format = parts[1];
                 }
-
+                IRpnValue rslt = new RpnString("failed");
 
                 parts[0] = instance.LowerCasedVariables[parts[0].ToLower()].Name;
-                
-                var rslt = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(parts[0]), instance.MemoryDataSource);
+                try
+                {
+                    CodeLexer lexer = new CodeLexer(new StringReader(parts[0]));
+                    lexer.Parse();
+                    rslt = new CalculationExpression(lexer.Tokens).GetRpnValue();
+                }
+                catch
+                {
+                    // ignored
+                }
+
+
+                //var rslt = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(parts[0]), instance.MemoryDataSource);
                 //var rslt = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(parts[0].Trim('$','{','}')), instance.MemoryDataSource);
-                innerFormat.Replace(val, rslt.ToString(format,LocalizationInfo.Current.Culture));
+                innerFormat.Replace(val, rslt.ToString(format, LocalizationInfo.Current.Culture));
             }
 
             innerFormat.Append('\0', 4);

@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using InfoReader.ExpressionParser.Nodes;
+using Lexer;
+using Lexer.Expressions;
+using Lexer.RpnExpression;
 
 namespace InfoReader.ExpressionParser.Tools
 {
     internal static class InternalMethods
     {
-        public static Dictionary<string, ExpressionNode> Variables = new();
+        public static Dictionary<string, IRpnValue> Variables = new();
 
-        public static void AddOrUpdateVariables(Dictionary<string, ExpressionNode> vars)
+        public static void AddOrUpdateVariables(Dictionary<string, IRpnValue> vars)
         {
             foreach (var expressionNode in Variables)
             {
@@ -24,10 +28,13 @@ namespace InfoReader.ExpressionParser.Tools
         internal static double Pow(double x, double y) => Math.Pow(x, y);
         internal static double Log(double a, double x) => Math.Log(a, x);
         internal static double Log10(double a) => Math.Log10(a);
-        internal static ExpressionNode Set(string varName, string val)
+        internal static IRpnValue Set(string varName, string val)
         {
-            var rslt = RpnTools.CalcRpnStack(RpnTools.ToRpnExpression(val), Variables);
-            if (rslt == NullNode.Null)
+            CodeLexer lexer = new CodeLexer(new StringReader(val));
+            lexer.Parse();
+            CalculationExpression calculationExpression = new CalculationExpression(lexer.Tokens);
+            var rslt = calculationExpression.GetRpnValue();
+            if (rslt == null)
             {
                 throw new ArgumentException();
             }

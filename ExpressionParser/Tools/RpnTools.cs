@@ -6,6 +6,7 @@ using InfoReader.ExpressionParser.Nodes;
 
 namespace InfoReader.ExpressionParser.Tools
 {
+    [Obsolete("This class is no longer for use. Please use Lexer.RpnExpression.RpnTools")]
     public static class RpnTools
     {
         public static bool IsOperator(char token)
@@ -46,7 +47,7 @@ namespace InfoReader.ExpressionParser.Tools
         {
             if (op is null || op.Value is null)
                 throw new ArgumentNullException();
-            if (op.Value.Equals("("))
+            if (op.Value.Equals("(") || opNodes.Count == 0)
             {
                 opNodes.Push(op);
                 return;

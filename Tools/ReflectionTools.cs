@@ -38,7 +38,7 @@ namespace InfoReader.Tools
             List<ConstructorInfo> matchedConstructors = new List<ConstructorInfo>();
             if (constructor == null)
             {
-                ConstructorInfo[] constructors = t.GetConstructors();
+                ConstructorInfo[] constructors = t.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 foreach (var constructorInfo in constructors)
                 {
                     int paraCount = constructorInfo.GetParameters().Length;

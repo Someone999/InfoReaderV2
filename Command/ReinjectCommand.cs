@@ -16,7 +16,7 @@ namespace InfoReader.Command
         
         public string GetHelp()
         {
-            throw new NotImplementedException();
+            return LocalizationInfo.Current.Translations["LANG_HELP_REINJECT"];
         }
 
         public bool Execute(InfoReaderPlugin instance, CommandParser parser)

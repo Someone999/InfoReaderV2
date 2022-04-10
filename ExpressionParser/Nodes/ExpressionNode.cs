@@ -3,6 +3,7 @@ using System.Reflection;
 
 namespace InfoReader.ExpressionParser.Nodes
 {
+    [Obsolete("This class is replaced by Lexer.CodeLexer and Lexer.Expressions.CalculationExpression")]
     public abstract class ExpressionNode
     {
         protected ExpressionNode(object? objNode)

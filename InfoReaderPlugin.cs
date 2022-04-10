@@ -76,7 +76,8 @@ namespace InfoReader
                 if (commandTypeArgs != null && commandTypeArgs.ContainsKey(type))
                 {
                     args = commandTypeArgs[type];
-                }                    //ReflectionTools.CreateInstance<IConfigurable>(args);
+                }                    
+                //ReflectionTools.CreateInstance<IConfigurable>(args);
                 var configuration = (IConfigurable?)ReflectionTools.CreateInstance(type, args);
                 if (configuration == null)
                 {
@@ -118,7 +119,7 @@ namespace InfoReader
             MmfConfiguration = (MmfConfiguration)Configurables["mmf"];
             CheckMigrate(configElement);
             InitCommand();
-            CheckConfigFileBackup();
+            //CheckConfigFileBackup();
             LocalizationInfo.Current = LocalizationInfo.GetLocalizationInfo(Configuration.LanguageId);
             EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(Loaded);
             EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitSyncCommand);

@@ -66,6 +66,7 @@ namespace InfoReader.Command
             {
                 switch (args[0])
                 {
+                    case "reload":
                     case "refresh":
                         ConfigTools.RefreshConfig(instance);
                         return true;

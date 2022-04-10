@@ -16,6 +16,7 @@ public class ResourceFileInfo
     public string ResourceName { get; }
     public string ResourcePath { get; }
     public long ResourceSize { get; }
+    public bool ForcedReplace { get;  set; }
     public ResourceStream ResourceStream { get; }
 
     public Stream? Write(Stream stream, bool autoClose = true)
